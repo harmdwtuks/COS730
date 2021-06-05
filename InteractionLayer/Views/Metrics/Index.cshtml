@@ -20,7 +20,7 @@
                     <th>Measurement</th>
                     <th>Timestamp</th>
                 </tr>
-                @foreach (var item in Model.MetricRecords.Where(x => x.MetricType == type).OrderBy(z => z.Timestamp))
+                @foreach (var item in Model.MetricRecords.Where(x => x.MetricType == type).OrderByDescending(z => z.Timestamp))
                 {
                     <tr>
                         <td>@item.Measurement</td>

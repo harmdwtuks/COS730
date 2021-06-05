@@ -41,7 +41,7 @@ namespace InteractionLayer.Controllers
             //    records.Where(x => x.MetricType == type).OrderBy(z => z.Timestamp);
             //}
 
-            model.MetricTypes = model.MetricRecords.Select(x => x.MetricType).Distinct().OrderByDescending(z => z).ToList();
+            model.MetricTypes = model.MetricRecords.Select(x => x.MetricType).Distinct().OrderBy(z => z).ToList();
             
             return View(model);
         }
