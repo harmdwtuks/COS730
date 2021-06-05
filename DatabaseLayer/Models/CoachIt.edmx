@@ -1,0 +1,494 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="CoachItModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="MetricClass">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Class" Type="nvarchar" MaxLength="500" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MetricRecords">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Measurement" Type="float" Nullable="false" />
+          <Property Name="MetricTypeId" Type="int" Nullable="false" />
+          <Property Name="Timestamp" Type="datetime" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MetricType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Type" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="MetricUnitId" Type="int" Nullable="false" />
+          <Property Name="MetricClassId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MetricUnit">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Unit" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="webpages_Membership">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime" />
+          <Property Name="ConfirmationToken" Type="nvarchar" MaxLength="128" />
+          <Property Name="IsConfirmed" Type="bit" />
+          <Property Name="LastPasswordFailureDate" Type="datetime" />
+          <Property Name="PasswordFailuresSinceLastSuccess" Type="int" Nullable="false" />
+          <Property Name="Password" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="PasswordChangedDate" Type="datetime" />
+          <Property Name="PasswordSalt" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="PasswordVerificationToken" Type="nvarchar" MaxLength="128" />
+          <Property Name="PasswordVerificationTokenExpirationDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="webpages_OAuthMembership">
+          <Key>
+            <PropertyRef Name="Provider" />
+            <PropertyRef Name="ProviderUserId" />
+          </Key>
+          <Property Name="Provider" Type="nvarchar" MaxLength="30" Nullable="false" />
+          <Property Name="ProviderUserId" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="webpages_Roles">
+          <Key>
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="RoleId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RoleName" Type="nvarchar" MaxLength="256" Nullable="false" />
+        </EntityType>
+        <EntityType Name="webpages_Users">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Username" Type="nvarchar" MaxLength="56" Nullable="false" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="256" />
+          <Property Name="Surname" Type="nvarchar" MaxLength="256" />
+          <Property Name="EmailAddress" Type="nvarchar" MaxLength="256" />
+          <Property Name="ContactNumber" Type="nvarchar" MaxLength="20" />
+          <Property Name="TelegramUserId" Type="nvarchar" MaxLength="20" />
+        </EntityType>
+        <EntityType Name="webpages_UsersInRoles">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="RoleId" Type="int" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_MetricRecords_MetricType">
+          <End Role="MetricType" Type="Self.MetricType" Multiplicity="1" />
+          <End Role="MetricRecords" Type="Self.MetricRecords" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MetricType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MetricRecords">
+              <PropertyRef Name="MetricTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MetricRecords_webpages_Users">
+          <End Role="webpages_Users" Type="Self.webpages_Users" Multiplicity="1" />
+          <End Role="MetricRecords" Type="Self.MetricRecords" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="webpages_Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="MetricRecords">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MetricType_MetricClass">
+          <End Role="MetricClass" Type="Self.MetricClass" Multiplicity="1" />
+          <End Role="MetricType" Type="Self.MetricType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MetricClass">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MetricType">
+              <PropertyRef Name="MetricClassId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MetricType_MetricUnit">
+          <End Role="MetricUnit" Type="Self.MetricUnit" Multiplicity="1" />
+          <End Role="MetricType" Type="Self.MetricType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MetricUnit">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MetricType">
+              <PropertyRef Name="MetricUnitId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_RoleId">
+          <End Role="webpages_Roles" Type="Self.webpages_Roles" Multiplicity="1" />
+          <End Role="webpages_UsersInRoles" Type="Self.webpages_UsersInRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="webpages_Roles">
+              <PropertyRef Name="RoleId" />
+            </Principal>
+            <Dependent Role="webpages_UsersInRoles">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_UserId">
+          <End Role="webpages_Users" Type="Self.webpages_Users" Multiplicity="1" />
+          <End Role="webpages_UsersInRoles" Type="Self.webpages_UsersInRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="webpages_Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="webpages_UsersInRoles">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="CoachItModelStoreContainer">
+          <EntitySet Name="MetricClass" EntityType="Self.MetricClass" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MetricRecords" EntityType="Self.MetricRecords" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MetricType" EntityType="Self.MetricType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MetricUnit" EntityType="Self.MetricUnit" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="webpages_Membership" EntityType="Self.webpages_Membership" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="webpages_OAuthMembership" EntityType="Self.webpages_OAuthMembership" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="webpages_Roles" EntityType="Self.webpages_Roles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="webpages_Users" EntityType="Self.webpages_Users" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="webpages_UsersInRoles" EntityType="Self.webpages_UsersInRoles" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_MetricRecords_MetricType" Association="Self.FK_MetricRecords_MetricType">
+            <End Role="MetricType" EntitySet="MetricType" />
+            <End Role="MetricRecords" EntitySet="MetricRecords" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MetricRecords_webpages_Users" Association="Self.FK_MetricRecords_webpages_Users">
+            <End Role="webpages_Users" EntitySet="webpages_Users" />
+            <End Role="MetricRecords" EntitySet="MetricRecords" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MetricType_MetricClass" Association="Self.FK_MetricType_MetricClass">
+            <End Role="MetricClass" EntitySet="MetricClass" />
+            <End Role="MetricType" EntitySet="MetricType" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MetricType_MetricUnit" Association="Self.FK_MetricType_MetricUnit">
+            <End Role="MetricUnit" EntitySet="MetricUnit" />
+            <End Role="MetricType" EntitySet="MetricType" />
+          </AssociationSet>
+          <AssociationSet Name="fk_RoleId" Association="Self.fk_RoleId">
+            <End Role="webpages_Roles" EntitySet="webpages_Roles" />
+            <End Role="webpages_UsersInRoles" EntitySet="webpages_UsersInRoles" />
+          </AssociationSet>
+          <AssociationSet Name="fk_UserId" Association="Self.fk_UserId">
+            <End Role="webpages_Users" EntitySet="webpages_Users" />
+            <End Role="webpages_UsersInRoles" EntitySet="webpages_UsersInRoles" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="CoachItModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="CoachItEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="MetricClasses" EntityType="CoachItModel.MetricClass" />
+          <EntitySet Name="MetricRecords" EntityType="CoachItModel.MetricRecord" />
+          <EntitySet Name="MetricTypes" EntityType="CoachItModel.MetricType" />
+          <EntitySet Name="MetricUnits" EntityType="CoachItModel.MetricUnit" />
+          <EntitySet Name="webpages_Membership" EntityType="CoachItModel.webpages_Membership" />
+          <EntitySet Name="webpages_OAuthMembership" EntityType="CoachItModel.webpages_OAuthMembership" />
+          <EntitySet Name="webpages_Roles" EntityType="CoachItModel.webpages_Roles" />
+          <EntitySet Name="webpages_Users" EntityType="CoachItModel.webpages_Users" />
+          <AssociationSet Name="FK_MetricType_MetricClass" Association="CoachItModel.FK_MetricType_MetricClass">
+            <End Role="MetricClass" EntitySet="MetricClasses" />
+            <End Role="MetricType" EntitySet="MetricTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MetricRecords_MetricType" Association="CoachItModel.FK_MetricRecords_MetricType">
+            <End Role="MetricType" EntitySet="MetricTypes" />
+            <End Role="MetricRecord" EntitySet="MetricRecords" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MetricRecords_webpages_Users" Association="CoachItModel.FK_MetricRecords_webpages_Users">
+            <End Role="webpages_Users" EntitySet="webpages_Users" />
+            <End Role="MetricRecord" EntitySet="MetricRecords" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MetricType_MetricUnit" Association="CoachItModel.FK_MetricType_MetricUnit">
+            <End Role="MetricUnit" EntitySet="MetricUnits" />
+            <End Role="MetricType" EntitySet="MetricTypes" />
+          </AssociationSet>
+          <AssociationSet Name="webpages_UsersInRoles" Association="CoachItModel.webpages_UsersInRoles">
+            <End Role="webpages_Roles" EntitySet="webpages_Roles" />
+            <End Role="webpages_Users" EntitySet="webpages_Users" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="MetricClass">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Class" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="MetricTypes" Relationship="CoachItModel.FK_MetricType_MetricClass" FromRole="MetricClass" ToRole="MetricType" />
+        </EntityType>
+        <EntityType Name="MetricRecord">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Measurement" Type="Double" Nullable="false" />
+          <Property Name="MetricTypeId" Type="Int32" Nullable="false" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="MetricType" Relationship="CoachItModel.FK_MetricRecords_MetricType" FromRole="MetricRecord" ToRole="MetricType" />
+          <NavigationProperty Name="webpages_Users" Relationship="CoachItModel.FK_MetricRecords_webpages_Users" FromRole="MetricRecord" ToRole="webpages_Users" />
+        </EntityType>
+        <EntityType Name="MetricType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Type" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="MetricUnitId" Type="Int32" Nullable="false" />
+          <Property Name="MetricClassId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="MetricClass" Relationship="CoachItModel.FK_MetricType_MetricClass" FromRole="MetricType" ToRole="MetricClass" />
+          <NavigationProperty Name="MetricRecords" Relationship="CoachItModel.FK_MetricRecords_MetricType" FromRole="MetricType" ToRole="MetricRecord" />
+          <NavigationProperty Name="MetricUnit" Relationship="CoachItModel.FK_MetricType_MetricUnit" FromRole="MetricType" ToRole="MetricUnit" />
+        </EntityType>
+        <EntityType Name="MetricUnit">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Unit" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="MetricTypes" Relationship="CoachItModel.FK_MetricType_MetricUnit" FromRole="MetricUnit" ToRole="MetricType" />
+        </EntityType>
+        <EntityType Name="webpages_Membership">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="CreateDate" Type="DateTime" Precision="3" />
+          <Property Name="ConfirmationToken" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="IsConfirmed" Type="Boolean" />
+          <Property Name="LastPasswordFailureDate" Type="DateTime" Precision="3" />
+          <Property Name="PasswordFailuresSinceLastSuccess" Type="Int32" Nullable="false" />
+          <Property Name="Password" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="PasswordChangedDate" Type="DateTime" Precision="3" />
+          <Property Name="PasswordSalt" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="PasswordVerificationToken" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="PasswordVerificationTokenExpirationDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="webpages_OAuthMembership">
+          <Key>
+            <PropertyRef Name="Provider" />
+            <PropertyRef Name="ProviderUserId" />
+          </Key>
+          <Property Name="Provider" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="ProviderUserId" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="webpages_Roles">
+          <Key>
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="RoleId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RoleName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="webpages_Users" Relationship="CoachItModel.webpages_UsersInRoles" FromRole="webpages_Roles" ToRole="webpages_Users" />
+        </EntityType>
+        <EntityType Name="webpages_Users">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="56" FixedLength="false" Unicode="true" />
+          <Property Name="FirstName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Surname" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="EmailAddress" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="ContactNumber" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="TelegramUserId" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="MetricRecords" Relationship="CoachItModel.FK_MetricRecords_webpages_Users" FromRole="webpages_Users" ToRole="MetricRecord" />
+          <NavigationProperty Name="webpages_Roles" Relationship="CoachItModel.webpages_UsersInRoles" FromRole="webpages_Users" ToRole="webpages_Roles" />
+        </EntityType>
+        <Association Name="FK_MetricType_MetricClass">
+          <End Type="CoachItModel.MetricClass" Role="MetricClass" Multiplicity="1" />
+          <End Type="CoachItModel.MetricType" Role="MetricType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MetricClass">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MetricType">
+              <PropertyRef Name="MetricClassId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MetricRecords_MetricType">
+          <End Type="CoachItModel.MetricType" Role="MetricType" Multiplicity="1" />
+          <End Type="CoachItModel.MetricRecord" Role="MetricRecord" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MetricType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MetricRecord">
+              <PropertyRef Name="MetricTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MetricRecords_webpages_Users">
+          <End Type="CoachItModel.webpages_Users" Role="webpages_Users" Multiplicity="1" />
+          <End Type="CoachItModel.MetricRecord" Role="MetricRecord" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="webpages_Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="MetricRecord">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MetricType_MetricUnit">
+          <End Type="CoachItModel.MetricUnit" Role="MetricUnit" Multiplicity="1" />
+          <End Type="CoachItModel.MetricType" Role="MetricType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MetricUnit">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MetricType">
+              <PropertyRef Name="MetricUnitId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="webpages_UsersInRoles">
+          <End Type="CoachItModel.webpages_Roles" Role="webpages_Roles" Multiplicity="*" />
+          <End Type="CoachItModel.webpages_Users" Role="webpages_Users" Multiplicity="*" />
+        </Association>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="CoachItModelStoreContainer" CdmEntityContainer="CoachItEntities">
+          <EntitySetMapping Name="MetricClasses">
+            <EntityTypeMapping TypeName="CoachItModel.MetricClass">
+              <MappingFragment StoreEntitySet="MetricClass">
+                <ScalarProperty Name="Class" ColumnName="Class" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MetricRecords">
+            <EntityTypeMapping TypeName="CoachItModel.MetricRecord">
+              <MappingFragment StoreEntitySet="MetricRecords">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+                <ScalarProperty Name="MetricTypeId" ColumnName="MetricTypeId" />
+                <ScalarProperty Name="Measurement" ColumnName="Measurement" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MetricTypes">
+            <EntityTypeMapping TypeName="CoachItModel.MetricType">
+              <MappingFragment StoreEntitySet="MetricType">
+                <ScalarProperty Name="MetricClassId" ColumnName="MetricClassId" />
+                <ScalarProperty Name="MetricUnitId" ColumnName="MetricUnitId" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MetricUnits">
+            <EntityTypeMapping TypeName="CoachItModel.MetricUnit">
+              <MappingFragment StoreEntitySet="MetricUnit">
+                <ScalarProperty Name="Unit" ColumnName="Unit" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="webpages_Membership">
+            <EntityTypeMapping TypeName="CoachItModel.webpages_Membership">
+              <MappingFragment StoreEntitySet="webpages_Membership">
+                <ScalarProperty Name="PasswordVerificationTokenExpirationDate" ColumnName="PasswordVerificationTokenExpirationDate" />
+                <ScalarProperty Name="PasswordVerificationToken" ColumnName="PasswordVerificationToken" />
+                <ScalarProperty Name="PasswordSalt" ColumnName="PasswordSalt" />
+                <ScalarProperty Name="PasswordChangedDate" ColumnName="PasswordChangedDate" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="PasswordFailuresSinceLastSuccess" ColumnName="PasswordFailuresSinceLastSuccess" />
+                <ScalarProperty Name="LastPasswordFailureDate" ColumnName="LastPasswordFailureDate" />
+                <ScalarProperty Name="IsConfirmed" ColumnName="IsConfirmed" />
+                <ScalarProperty Name="ConfirmationToken" ColumnName="ConfirmationToken" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="webpages_OAuthMembership">
+            <EntityTypeMapping TypeName="CoachItModel.webpages_OAuthMembership">
+              <MappingFragment StoreEntitySet="webpages_OAuthMembership">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="ProviderUserId" ColumnName="ProviderUserId" />
+                <ScalarProperty Name="Provider" ColumnName="Provider" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="webpages_Roles">
+            <EntityTypeMapping TypeName="CoachItModel.webpages_Roles">
+              <MappingFragment StoreEntitySet="webpages_Roles">
+                <ScalarProperty Name="RoleName" ColumnName="RoleName" />
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="webpages_Users">
+            <EntityTypeMapping TypeName="CoachItModel.webpages_Users">
+              <MappingFragment StoreEntitySet="webpages_Users">
+                <ScalarProperty Name="TelegramUserId" ColumnName="TelegramUserId" />
+                <ScalarProperty Name="ContactNumber" ColumnName="ContactNumber" />
+                <ScalarProperty Name="EmailAddress" ColumnName="EmailAddress" />
+                <ScalarProperty Name="Surname" ColumnName="Surname" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="webpages_UsersInRoles" TypeName="CoachItModel.webpages_UsersInRoles" StoreEntitySet="webpages_UsersInRoles">
+            <EndProperty Name="webpages_Users">
+              <ScalarProperty Name="UserId" ColumnName="UserId" />
+            </EndProperty>
+            <EndProperty Name="webpages_Roles">
+              <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+            </EndProperty>
+          </AssociationSetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

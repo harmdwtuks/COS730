@@ -1,0 +1,37 @@
+﻿@model InteractionLayer.Models.MetricsViewMainModel
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Metrics</h2>
+
+@foreach (string type in Model.MetricTypes)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <h3>@type</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table style="width:100%">
+                <tr>
+                    <th>Measurement</th>
+                    <th>Timestamp</th>
+                </tr>
+                @foreach (var item in Model.MetricRecords.Where(x => x.MetricType == type).OrderBy(z => z.Timestamp))
+                {
+                    <tr>
+                        <td>@item.Measurement</td>
+                        <td>@item.Timestamp</td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+    
+}
+<div class="row">
+
+</div>

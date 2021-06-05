@@ -1,0 +1,19 @@
+﻿@{
+    Layout = "~/Views/Shared/_EmptyLayout.cshtml";
+}
+
+@model List<InteractionLayer.Models.MetricType>
+
+<div class="row">
+    <div class="col-md-8">
+        @Html.DropDownList("MetricType",
+        new SelectList(Model.Select(a =>
+                              new SelectListItem
+                              {
+                                  Value = a.Id.ToString(),
+                                  Text = a.Type
+                              }).ToList(), "Value", "Text"),
+        "Select Type",
+        new { @class = "form-control", @onChange = "SelectedType(this)" })
+    </div>
+</div>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="ffa32f44ef5b4759bae933220dbbdce5" Name="Diagram1">
+        <EntityTypeShape EntityType="CoachItModel.MetricClass" Width="1.5" PointX="0.75" PointY="5.375" />
+        <EntityTypeShape EntityType="CoachItModel.MetricRecord" Width="1.5" PointX="5.25" PointY="1" />
+        <EntityTypeShape EntityType="CoachItModel.MetricType" Width="1.5" PointX="3" PointY="1" />
+        <EntityTypeShape EntityType="CoachItModel.MetricUnit" Width="1.5" PointX="0.75" PointY="1.375" />
+        <EntityTypeShape EntityType="CoachItModel.webpages_Membership" Width="1.5" PointX="5.75" PointY="4.75" />
+        <EntityTypeShape EntityType="CoachItModel.webpages_OAuthMembership" Width="1.5" PointX="2.75" PointY="4.75" />
+        <EntityTypeShape EntityType="CoachItModel.webpages_Roles" Width="1.5" PointX="0.75" PointY="8.375" />
+        <EntityTypeShape EntityType="CoachItModel.webpages_Users" Width="1.5" PointX="3" PointY="7.75" />
+        <AssociationConnector Association="CoachItModel.FK_MetricType_MetricClass" />
+        <AssociationConnector Association="CoachItModel.FK_MetricRecords_MetricType" />
+        <AssociationConnector Association="CoachItModel.FK_MetricRecords_webpages_Users" />
+        <AssociationConnector Association="CoachItModel.FK_MetricType_MetricUnit" />
+        <AssociationConnector Association="CoachItModel.webpages_UsersInRoles" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

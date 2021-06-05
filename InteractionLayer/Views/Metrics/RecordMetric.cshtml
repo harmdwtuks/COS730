@@ -1,0 +1,117 @@
+﻿@model InteractionLayer.Models.MetricsMainModel
+
+@{
+    ViewBag.Title = "RecordMetric";
+}
+
+<div>
+    <div class="row">
+        <div class="col-md-12">
+            <h2>RecordMetric</h2>
+        </div>
+    </div>
+
+    <form id="newMetric">
+        <div id="classPlaceHolder">
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="date" id="timestamp" name="Timestamp" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" max="@DateTime.Now.ToString("yyyy-MM-dd")">
+                </div>
+            </div>
+        </div>
+        <br>
+        <div id="classPlaceHolder">
+            <div class="row">
+                @*<div class="col-md-4">
+                    <label>Select Class:</label>
+                </div>*@
+                <div class="col-md-12">
+                    @*@Html.DropDownListFor(model => Model.MetricClasses, Model.MetricClasses as SelectList, new { @class = "form-control", @onChange = "SelectedClass(this)" })*@
+
+                    @Html.DropDownList("MetricClass",
+                        new SelectList(Model.MetricClasses, "Value", "Text"),
+                        "Select Class",
+                        new { @class = "form-control", @onChange = "SelectedClass(this)" }
+                     )
+                </div>
+            </div>
+        </div>
+        <br>
+        <div id="TypesPlaceHolder">
+            <!--Place holder for Metric Types-->
+        </div>
+        <br>
+        <div id="MeasurementPlaceHolder" class="hidden">
+            <div class="row">
+                <div class="col-md-6">
+                    <input id="measurement" name="Quantity" type="number" value="0.0" min="0" step="any" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label id="metricUnit"></label>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="button" class="btn btn-success" onclick="AddMetric()">Add</button>
+                </div>
+            </div>
+        </div>
+
+
+    </form>
+</div>
+
+<script>
+
+    function SelectedClass(classObj) {
+        $.ajax({
+            type: "GET",
+            url: "/Metrics/GetMetricTypesByClass",
+            contentType: "application/json; charset=utf-8",
+            data: { "id": classObj.value},
+            datatype: "json",
+            success: function (data) {
+                $("#TypesPlaceHolder").html(data);
+            },
+            error: function () {
+                alert("Something went wrong.");
+            }
+        });
+    };
+
+    function SelectedType(typeObj) {
+        $.ajax({
+            type: "GET",
+            url: "/Metrics/GetMetricUnitByType",
+            contentType: "application/json; charset=utf-8",
+            data: { "id": typeObj.value },
+            datatype: "json",
+            success: function (data) {
+                $("#metricUnit").html(data.unit);
+                $("#MeasurementPlaceHolder").removeClass("hidden"); 
+            },
+            error: function () {
+                alert("Something went wrong.");
+            }
+        });
+    };
+
+    function AddMetric() {
+        
+        $.ajax({
+            type: "GET",
+            url: "/Metrics/AddMetric",
+            contentType: "application/json; charset=utf-8",
+            data: $("form[id=newMetric]").serialize(),
+            datatype: "json",
+            success: function (data) {
+                alert(data.result);
+            },
+            error: function () {
+                alert("Something went wrong.");
+            }
+        });
+    };
+
+</script>
