@@ -63,6 +63,8 @@ namespace DatabaseLayer.Controllers
         [Route("CreateClass")]
         public IHttpActionResult CreateClass([FromBody] JObject jsonResult)
         {
+            dynamic jObjReturn = new JObject();
+
             string className = jsonResult["className"].ToString();
 
             CoachItEntities _db = new CoachItEntities();
@@ -88,15 +90,19 @@ namespace DatabaseLayer.Controllers
                                }).ToList().FirstOrDefault();
 
                 _db.Dispose();
-                
-                return Ok(JsonConvert.SerializeObject(metricClassReturn));
+
+                jObjReturn.status = "OK";
+                jObjReturn.result = JsonConvert.SerializeObject(metricClassReturn);
             }
             else
             {
                 _db.Dispose();
 
-                return null;
+                jObjReturn.status = "FAILED";
+                jObjReturn.result = $"Class '{className}' already exist!";
             }
+
+            return Ok(jObjReturn);
         }
 
         [HttpPost]
@@ -140,8 +146,8 @@ namespace DatabaseLayer.Controllers
 
         #region MetricUnit Actions
 
-        [HttpGet]
-        [Route("Unit")]
+        [HttpPost]
+        [Route("GetUnitById")]
         public IHttpActionResult GetUnitById([FromBody] JObject jsonResult)
         {
             int id = Convert.ToInt32(jsonResult["id"].ToString());
@@ -210,8 +216,9 @@ namespace DatabaseLayer.Controllers
         [Route("CreateUnit")]
         public IHttpActionResult CreateUnit([FromBody] JObject jsonResult)
         {
-            int id = Convert.ToInt32(jsonResult["id"].ToString());
-            string unit = jsonResult["unit"].ToString();
+            dynamic jObjReturn = new JObject();
+
+            string unit = jsonResult["unitName"].ToString();
 
             CoachItEntities _db = new CoachItEntities();
 
@@ -237,14 +244,18 @@ namespace DatabaseLayer.Controllers
 
                 _db.Dispose();
 
-                return Ok(JsonConvert.SerializeObject(metricUnitReturn));
+                jObjReturn.status = "OK";
+                jObjReturn.result = JsonConvert.SerializeObject(metricUnitReturn);
             }
             else
             {
                 _db.Dispose();
 
-                return null;
+                jObjReturn.status = "FAILED";
+                jObjReturn.result = $"Unit '{unit}' already exist!";
             }
+
+            return Ok(jObjReturn);
         }
 
         [HttpPost]
@@ -288,6 +299,45 @@ namespace DatabaseLayer.Controllers
 
         #region MetricType Actions
 
+        [HttpPost]
+        [Route("CreateType")]
+        public IHttpActionResult CreateType([FromBody] JObject jsonResult)
+        {
+            dynamic jObjReturn = new JObject();
+
+            try
+            {
+                int metricClassId = Convert.ToInt32(jsonResult["MetricClassId"].ToString());
+                int metricUnitId = Convert.ToInt32(jsonResult["MetricUnitId"].ToString());
+                string metricType = jsonResult["MetricType"].ToString();
+
+                CoachItEntities _db = new CoachItEntities();
+
+                MetricType newType = new MetricType()
+                {
+                    MetricClassId = metricClassId,
+                    MetricUnitId = metricUnitId,
+                    Type = metricType
+                };
+
+                _db.MetricTypes.Add(newType);
+                _db.SaveChanges();
+                _db.Dispose();
+
+                jObjReturn.status = "OK";
+                jObjReturn.result = "New type added to database";
+
+                return Ok("New type added to database");
+            }
+            catch (Exception exception)
+            {
+                jObjReturn.status = "FAILED";
+                jObjReturn.result = exception.Message;
+            }
+
+            return Ok(jObjReturn);
+        }
+
         [HttpGet]
         [Route("Type")]
         public IHttpActionResult Type()
@@ -300,6 +350,7 @@ namespace DatabaseLayer.Controllers
                                       Id = s.Id,
                                       Type = s.Type,
                                       MetricClassId = s.MetricClassId,
+                                      MetricClass = s.MetricClass.Class,
                                       MetricUnitId = s.MetricUnitId,
                                       Unit = s.MetricUnit.Unit
                                   }).ToList();

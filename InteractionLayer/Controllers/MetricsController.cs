@@ -16,9 +16,14 @@ namespace InteractionLayer.Controllers
     {
         private static readonly string GetMetricClassesEndpoint = ConfigurationManager.AppSettings["GetMetricClassesEndpoint"];
         private static readonly string GetMetricTypesByIdEndpoint = ConfigurationManager.AppSettings["GetMetricTypesByIdEndpoint"];
+        private static readonly string GetMetricTypesEndpoint = ConfigurationManager.AppSettings["GetMetricTypesEndpoint"];
         private static readonly string GetMetricUnitByTypeIdEndpoint = ConfigurationManager.AppSettings["GetMetricUnitByTypeIdEndpoint"];
         private static readonly string AddNewMetricRecordEndpoint = ConfigurationManager.AppSettings["AddNewMetricEndpoint"];
+        private static readonly string AddNewClassEndpoint = ConfigurationManager.AppSettings["AddNewClassEndpoint"];
+        private static readonly string AddNewUnitEndpoint = ConfigurationManager.AppSettings["AddNewUnitEndpoint"];
         private static readonly string GetMetricsEndpoint = ConfigurationManager.AppSettings["GetMetricsEndpoint"];
+        private static readonly string GetUnitsEndpoint = ConfigurationManager.AppSettings["GetUnitsEndpoint"];
+        private static readonly string CreateNewMetricTypeEndpoint = ConfigurationManager.AppSettings["CreateNewMetricTypeEndpoint"];
 
         // GET: Metrics
         public ActionResult Index()
@@ -61,12 +66,15 @@ namespace InteractionLayer.Controllers
             request.Method = requestMethod.Trim().ToUpper(); // Normalize.
             //request.Headers.Add("Subscription-Key", VumacamSubscriptionKey);
             //request.Headers.Add("Authorization", "Bearer " + BearerToken);
-            
-            using (StreamWriter writer = new StreamWriter(request.GetRequestStream()))
+
+            if (!String.IsNullOrWhiteSpace(jsonQuery))
             {
-                writer.Write(jsonQuery);
-                writer.Flush();
-                writer.Close();
+                using (StreamWriter writer = new StreamWriter(request.GetRequestStream()))
+                {
+                    writer.Write(jsonQuery);
+                    writer.Flush();
+                    writer.Close();
+                } 
             }
 
             dynamic jObj = new JObject();
@@ -84,13 +92,30 @@ namespace InteractionLayer.Controllers
                         result = reader.ReadToEnd();
                     }
 
-                    result = result.Substring(1);
-                    result = result.Substring(0, result.Length - 1);
-                    result = result.Replace("\\\"", "\"");
+                    if (result.StartsWith("\""))
+                    {
+                        result = result.Substring(1);
+                        result = result.Substring(0, result.Length - 1);
+                        result = result.Replace("\\\"", "\"");
 
-                    //return Json(new { status = "OK", result });
-                    jObj.status = "OK";
-                    jObj.result = result;
+                        jObj.status = "OK";
+                        jObj.result = result;
+                    }
+                    else
+                    {
+                        JObject resultObject = JObject.Parse(result);
+
+                        if (resultObject["status"].ToString() == "OK")
+                        {
+                            jObj.status = "OK";
+                            jObj.result = resultObject["result"].ToString();
+                        }
+                        else
+                        {
+                            jObj.status = "FAILED";
+                            jObj.result = resultObject["result"].ToString();
+                        }
+                    }
 
                     return jObj;
                 }
@@ -156,6 +181,15 @@ namespace InteractionLayer.Controllers
             }
 
             return metricClasses;
+        }
+
+        private List<MetricUnits> GetMetricUnits()
+        {
+            JObject jObj = QueryMicroService(GetUnitsEndpoint, "GET", "");
+
+            List<MetricUnits> metricUnits = JsonConvert.DeserializeObject<List<MetricUnits>>(jObj["result"].ToString().Replace("\\\"", "\""));
+
+            return metricUnits;
         }
 
         public ActionResult RecordMetric()
@@ -283,51 +317,132 @@ namespace InteractionLayer.Controllers
 
         private string AddNewMetric(MetricsMainModel obj)
         {
-            string result = "";
-
-            // API call
-            HttpWebRequest request = WebRequest.Create(AddNewMetricRecordEndpoint) as HttpWebRequest;
-            request.ContentType = "application/json";
-            request.Method = "POST";
-            //request.Headers.Add("Subscription-Key", VumacamSubscriptionKey);
-            //request.Headers.Add("Authorization", "Bearer " + BearerToken);
-
             string JsonQuery = "{" +
-                                "\"MetricClass\":\"" + obj.MetricClass + "\"," +
+                                "\"MetricClass\":" + obj.MetricClass + "," +
                                 "\"MetricType\":\"" + obj.MetricType + "\"," +
-                                "\"Quantity\":\"" + obj.Quantity + "\"," +
-                                "\"Timestamp\":\"" + obj.Timestamp + "\"," +
+                                "\"Quantity\":" + obj.Quantity.ToString("0.#############", System.Globalization.CultureInfo.InvariantCulture) + "," +
+                                "\"Timestamp\":\"" + obj.Timestamp + "\"" +
                                "}";
 
-            using (StreamWriter writer = new StreamWriter(request.GetRequestStream()))
+
+            JObject jObj = QueryMicroService(AddNewMetricRecordEndpoint, "POST", JsonQuery);
+
+            string message = "";
+
+            if (jObj["status"].ToString() == "OK")
             {
-                writer.Write(JsonQuery);
-                writer.Flush();
-                writer.Close();
+                message = jObj["result"].ToString();
+            }
+            else
+            {
+                message = $"Failed to record metric.\n{jObj["result"].ToString()}";
             }
             
-            HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-            {
-                result = reader.ReadToEnd();
-            }
-
-            //if (response.StatusCode == HttpStatusCode.OK)
-            //{
-
-            //}
-            //else
-            //{
-            //    result = "Failed";
-            //}
-
-            return result;
+            return message;
         }
 
         public ActionResult AddMetric(MetricsMainModel obj)
         {
             return Json(new { result = AddNewMetric(obj) }, JsonRequestBehavior.AllowGet);
+        }
+        
+        private List<MetricType> GetMetricTypes()
+        {
+            JObject jObj = QueryMicroService(GetMetricTypesEndpoint, "GET", "");
+
+            List<MetricType> typesList = new List<MetricType>();
+
+            if (jObj["status"].ToString() == "OK")
+            {
+                typesList = JsonConvert.DeserializeObject<List<MetricType>>(jObj["result"].ToString().Replace("\\\"", "\""));
+            }
+
+            return typesList;
+        }
+
+        [HttpGet]
+        public ActionResult NewTypeAndClass()
+        {
+            NewTypeAndClassViewModel model = new NewTypeAndClassViewModel();
+            model.MetricCasses = GetMetricClasses();
+            model.MetricUnits = GetMetricUnits();
+            model.CurrentTypes = GetMetricTypes();
+
+            return View(model);
+        }
+        
+        [HttpPost, ValidateAntiForgeryToken]
+        public ActionResult NewMetricType(NewType newType)
+        {
+            string JsonQuery = "{" +
+                                "\"MetricClassId\":\"" + newType.MetricClassId + "\"," +
+                                "\"MetricType\":\"" + newType.MetricType + "\"," +
+                                "\"MetricUnitId\":\"" + newType.MetricUnitId + "\"," +
+                               "}";
+
+
+            JObject jObj = QueryMicroService(CreateNewMetricTypeEndpoint, "POST", JsonQuery);
+
+            string message = "";
+
+            if (jObj["status"].ToString() == "OK")
+            {
+                message = "New type created successfully!";
+            }
+            else
+            {
+                message = $"Failed to create new type.\n{jObj["result"].ToString()}";
+            }
+            
+            return Json(new { message }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public ActionResult NewClass(string newClass)
+        {
+            string JsonQuery = "{" +
+                                "\"className\":\"" + newClass + "\"," +
+                               "}";
+
+
+            JObject jObj = QueryMicroService(AddNewClassEndpoint, "POST", JsonQuery);
+
+            string message = "";
+
+            if (jObj["status"].ToString() == "OK")
+            {
+                message = "New Class created successfully!";
+            }
+            else
+            {
+                message = $"Failed to create new Class.\n{jObj["result"].ToString()}";
+            }
+
+            return Json(new { message }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public ActionResult NewUnit(string newUnit)
+        {
+            string JsonQuery = "{" +
+                                "\"unitName\":\"" + newUnit + "\"," +
+                               "}";
+
+
+            JObject jObj = QueryMicroService(AddNewUnitEndpoint, "POST", JsonQuery);
+
+            string message = "";
+
+            if (jObj["status"].ToString() == "OK")
+            {
+                message = "New Unit created successfully!";
+            }
+            else
+            {
+                message = $"Failed to create new Unit.\n{jObj["result"].ToString()}";
+            }
+
+            return Json(new { message }, JsonRequestBehavior.AllowGet);
         }
     }
 }

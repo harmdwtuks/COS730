@@ -1,0 +1,188 @@
+﻿@model InteractionLayer.Models.NewTypeAndClassViewModel
+
+@{
+    ViewBag.Title = "NewTypeAndClass";
+}
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<h2>Create New Metric Types</h2>
+
+<form id="NewMetricType">
+    @Html.AntiForgeryToken()
+    <div class="row">
+        <div id="MetricClass" class="col-md-3">
+            <label>Class</label>
+            <br />
+            @Html.DropDownList("MetricClassId",
+            new SelectList(Model.MetricCasses.Select(a =>
+                        new SelectListItem
+                        {
+                            Value = a.Id.ToString(),
+                            Text = a.Class
+                        }).ToList(), "Value", "Text"),
+            "Select Class",
+            new { @class = "form-control" })
+            <br />
+            <button id="NewClass" class="btn btn-info">OR New Class</button>
+        </div>
+        <div id="NewMetricClass" class="col-md-3 hidden">
+            <label>Class</label>
+            <br />
+            <input id="NewClassInput" name="NewClassInput" class="form-control" placeholder="Enter Class">
+            <br />
+            <div class="btn-group">
+                <button id="AddClass" class="btn btn-primary">Add Class</button>
+                <button type="reset" class="cancel btn btn-danger">Cancel</button>
+            </div>
+        </div>
+        <div id="metricType" class="col-md-3">
+            <label>Type</label>
+            <br />
+            <input id="metricType" name="MetricType" class="form-control" placeholder="Enter Type">
+        </div>
+        <div id="MetricUnit" class="col-md-3">
+            <label>Unit</label>
+            <br />
+            @Html.DropDownList("MetricUnitId",
+            new SelectList(Model.MetricUnits.Select(a =>
+                        new SelectListItem
+                        {
+                            Value = a.Id.ToString(),
+                            Text = a.Unit
+                        }).ToList(), "Value", "Text"),
+            "Select Unit",
+            new { @class = "form-control" })
+            <br />
+            <button id="NewUnit" class="btn btn-info">OR New Unit</button>
+        </div>
+        <div id="NewMetricUnit" class="col-md-3 hidden">
+            <label>Unit</label>
+            <br />
+            <input id="NewUnitInput" name="NewUnitInput" class="form-control" placeholder="Enter Unit">
+            <br />
+            <div class="btn-group">
+                <button id="AddUnit" class="btn btn-primary">Add Unit</button>
+                <button type="reset" class="cancel btn btn-danger">Cancel</button>
+            </div>
+            
+        </div>
+        <div id="metricType" class="col-md-3">
+            <br />
+            <button id="NewTypeAndClass" type="submit" class="btn btn-success">Add Metric</button>
+        </div>
+    </div>
+</form>
+<br />
+<div class="row">
+    <div class="col-md-12">
+        <label>Existing Metric Types</label>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <table style="width:100%">
+            <tr>
+                <th>Class</th>
+                <th>Type</th>
+                <th>Unit</th>
+            </tr>
+            @foreach (var item in Model.CurrentTypes.OrderBy(z => z.MetricClass).OrderBy(x => x.Type))
+            {
+                <tr>
+                    <td>@item.MetricClass</td>
+                    <td>@item.Type</td>
+                    <td>@item.Unit</td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+
+<script>
+    //function NewTypeAndClass() {
+    $(document).ready(function () {
+        
+        $("#NewTypeAndClass").click(function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                type: "POST",
+                url: "/Metrics/NewMetricType",
+                data: $("form[id=NewMetricType]").serialize(),
+                datatype: "json",
+                success: function (data) {
+                    alert(data.message);
+                    //window.open('Url.Action("NewTypeAndClass", "Metrics")', _self);
+                    location.reload(); 
+                },
+                error: function (err) {
+                    alert(err.responseText);
+                }
+            });
+        });
+
+        $(".cancel").click(function (e) {
+            e.preventDefault();
+            location.reload(); 
+        });
+
+        $("#NewClass").click(function (e) {
+            e.preventDefault();
+
+            $("#MetricClass").addClass("hidden");
+            $("#NewMetricClass").removeClass("hidden");
+            $("#NewTypeAndClass").addClass("hidden");
+        });
+
+        $("#AddClass").click(function (e) {
+            e.preventDefault();
+
+            var form = $('#NewMetricType');
+            var token = $('input[name="__RequestVerificationToken"]', form).val();
+
+            $.ajax({
+                type: "POST",
+                url: "/Metrics/NewClass",
+                data: { __RequestVerificationToken: token, "newClass": $('#NewClassInput').val() },
+                datatype: "json",
+                success: function (data) {
+                    alert(data.message);
+                    location.reload(); 
+                },
+                error: function (err) {
+                    alert(err.responseText);
+                }
+            });
+        });
+
+        $("#NewUnit").click(function (e) {
+            e.preventDefault();
+
+            $("#MetricUnit").addClass("hidden");
+            $("#NewMetricUnit").removeClass("hidden"); 
+            $("#NewTypeAndClass").addClass("hidden");
+        });
+
+        $("#AddUnit").click(function (e) {
+            e.preventDefault();
+            
+            var form = $('#NewMetricType');
+            var token = $('input[name="__RequestVerificationToken"]', form).val();
+            
+            $.ajax({
+                type: "POST",
+                url: "/Metrics/NewUnit",
+                data: { __RequestVerificationToken: token, "newUnit": $('#NewUnitInput').val() },
+                datatype: "json",
+                success: function (data) {
+                    alert(data.message);
+                    location.reload(); 
+                },
+                error: function (err) {
+                    alert(err.responseText);
+                }
+            });
+        });
+    });
+</script>

@@ -9,8 +9,9 @@ namespace MetricsMS.Models
     {
         public int Id { get; set; }
         public string Type { get; set; }
-        public int ClassId { get; set; }
-        public int UnitId { get; set; }
+        public int MetricClassId { get; set; }
+        public string MetricClass { get; set; }
+        public int MetricUnitId { get; set; }
         public string Unit { get; set; }
     }
 }

@@ -130,6 +130,7 @@
     <Compile Include="Models\MetricRecord.cs" />
     <Compile Include="Models\MetricsMainModel.cs" />
     <Compile Include="Models\MetricType.cs" />
+    <Compile Include="Models\MetricUnits.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -174,6 +175,7 @@
     <Content Include="Views\Metrics\RecordMetric.cshtml" />
     <Content Include="Views\Metrics\GetMetricTypesByClass.cshtml" />
     <Content Include="Views\Shared\_EmptyLayout.cshtml" />
+    <Content Include="Views\Metrics\NewTypeAndClass.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

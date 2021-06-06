@@ -24,4 +24,18 @@ namespace InteractionLayer.Models
         public List<string> MetricTypes { get; set; }
         public List<MetricRecord> MetricRecords { get; set; }
     }
+
+    public class NewTypeAndClassViewModel
+    {
+        public List<MetricClass> MetricCasses { get; set; }
+        public List<MetricUnits> MetricUnits { get; set; }
+        public List<MetricType> CurrentTypes { get; set; }
+    }
+
+    public class NewType
+    {
+        public int MetricClassId { get; set; }
+        public string MetricType { get; set; }
+        public int MetricUnitId { get; set; }
+    }
 }
