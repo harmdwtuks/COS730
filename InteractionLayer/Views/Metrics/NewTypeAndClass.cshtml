@@ -87,7 +87,7 @@
                 <th>Type</th>
                 <th>Unit</th>
             </tr>
-            @foreach (var item in Model.CurrentTypes.OrderBy(z => z.MetricClass).OrderBy(x => x.Type))
+            @foreach (var item in Model.CurrentTypes.OrderBy(x => x.Type).OrderBy(z => z.MetricClass))
             {
                 <tr>
                     <td>@item.MetricClass</td>

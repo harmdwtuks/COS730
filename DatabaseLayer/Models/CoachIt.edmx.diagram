@@ -18,7 +18,15 @@
         <AssociationConnector Association="CoachItModel.FK_MetricRecords_webpages_Users" />
         <AssociationConnector Association="CoachItModel.FK_MetricType_MetricUnit" />
         <AssociationConnector Association="CoachItModel.webpages_UsersInRoles" />
-      </Diagram>
+        <EntityTypeShape EntityType="CoachItModel.WorkoutExerciseCategory" Width="1.5" PointX="7.375" PointY="0.75" />
+        <EntityTypeShape EntityType="CoachItModel.WorkoutExercis" Width="1.5" PointX="9.625" PointY="4.25" />
+        <AssociationConnector Association="CoachItModel.FK_WorkoutExercises_WorkoutExerciseCategories" />
+        <EntityTypeShape EntityType="CoachItModel.WorkoutUser" Width="1.5" PointX="5.25" PointY="9.25" />
+        <AssociationConnector Association="CoachItModel.FK_WorkoutUsers_webpages_Users" />
+        <EntityTypeShape EntityType="CoachItModel.WorkoutExercisesLInk" Width="1.5" PointX="11.875" PointY="6.5" />
+        <AssociationConnector Association="CoachItModel.FK_WorkoutExercisesUsers_WorkoutExercises" />
+        <AssociationConnector Association="CoachItModel.FK_WorkoutExercisesUsers_WorkoutUsers" />
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

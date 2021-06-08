@@ -33,5 +33,9 @@ namespace DatabaseLayer.Models
         public virtual DbSet<webpages_OAuthMembership> webpages_OAuthMembership { get; set; }
         public virtual DbSet<webpages_Roles> webpages_Roles { get; set; }
         public virtual DbSet<webpages_Users> webpages_Users { get; set; }
+        public virtual DbSet<WorkoutExerciseCategory> WorkoutExerciseCategories { get; set; }
+        public virtual DbSet<WorkoutExercis> WorkoutExercises { get; set; }
+        public virtual DbSet<WorkoutUser> WorkoutUsers { get; set; }
+        public virtual DbSet<WorkoutExercisesLInk> WorkoutExercisesLInks { get; set; }
     }
 }

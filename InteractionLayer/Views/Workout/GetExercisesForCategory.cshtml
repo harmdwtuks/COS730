@@ -1,0 +1,11 @@
+﻿@model InteractionLayer.Models.WorkoutExerciseManager
+
+        @Html.DropDownList("Exercises[" + Model.RowNumber + "].ExerciseId",
+        new SelectList(Model.CurrentExercises.Select(a =>
+                              new SelectListItem
+                              {
+                                  Value = a.ExerciseId.ToString(),
+                                  Text = a.Exercise
+                              }).ToList(), "Value", "Text"),
+        "Select Type",
+        new { @class = "form-control" })

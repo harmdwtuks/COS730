@@ -1,0 +1,96 @@
+﻿
+@{
+    ViewBag.Title = "CreateWorkout";
+}
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<h2>Create Workout</h2>
+
+<form id="NewWorkoutForm">
+    @Html.AntiForgeryToken()
+    <div class="row">
+        <div class="col-md-6">
+            <label>Workout Title</label>
+            <br />
+            <input id="WorkoutTitle" name="WorkoutTitle" class="form-control" placeholder="Enter Title">
+        </div>
+        <div class="col-md-6">
+            <label>Estimated Duration</label>
+            <br />
+            <input id="EstimatedDuration" type="time" name="EstimatedDuration" class="form-control" step="1" value="00:00:00" pattern="[0-9]{2}:[0-9]{2}:[0-9]{2}">
+        </div>
+    </div>
+    <br />
+    <input id="NumExercises" type="number" value="-1" hidden />
+    <div id="ExercisePlaceHolder">
+
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <button id="AddExercise" class="btn btn-info">Add Exercise</button>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+            <button id="CreateWorkout" type="submit" class="btn btn-success">Create Workout</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    $("#CreateWorkout").click(function (e) {
+        e.preventDefault();
+
+        $.ajax({
+            type: "POST",
+            url: "/Workout/CreateNewWorkout",
+            datatype: "json",
+            data: $("form[id=NewWorkoutForm]").serialize(),
+            success: function (data) {
+                alert(data.message);
+            },
+            error: function (err) {
+                alert(err.responseText);
+            }
+        });
+    });
+
+    $("#AddExercise").click(function (e) {
+        e.preventDefault();
+
+        $.ajax({
+            type: "POST",
+            url: "/Workout/AddExerciseToWorkout",
+            datatype: "json",
+            data: { "rowNumber": $("#NumExercises").val() },
+            success: function (data) {
+                $("#NumExercises").val(parseInt($("#NumExercises").val()) + 1);
+                $("#ExercisePlaceHolder").append(data);
+            },
+            error: function (err) {
+                alert(err.responseText);
+            }
+        });
+    });
+
+    function SelectedCategory(catObj) {
+
+        //var rowNum = catObj.id[catObj.id.length - 1];
+        var rowNum = $(catObj).attr("data");
+                
+        $.ajax({
+            type: "POST",
+            url: "/Workout/GetExercisesForCategory",
+            data: { "id": catObj.value, "rowNumber": rowNum },
+            datatype: "json",
+            success: function (data) {
+                $("#Exercise_" + rowNum).replaceWith(data);
+            },
+            error: function (err) {
+                alert("Something went wrong." + err.responseText);
+            }
+        });
+    };
+</script>

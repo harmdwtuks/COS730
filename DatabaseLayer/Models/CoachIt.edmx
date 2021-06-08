@@ -90,6 +90,44 @@
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="RoleId" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="WorkoutExerciseCategories">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Category" Type="nvarchar" MaxLength="1024" Nullable="false" />
+        </EntityType>
+        <EntityType Name="WorkoutExercises">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CategoryId" Type="int" Nullable="false" />
+          <Property Name="Exercise" Type="nvarchar" MaxLength="1024" Nullable="false" />
+          <Property Name="Instructions" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="WorkoutExercisesLInk">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="WorkoutUsersId" Type="int" Nullable="false" />
+          <Property Name="ExerciseId" Type="int" Nullable="false" />
+          <Property Name="Sets" Type="int" Nullable="false" />
+          <Property Name="Repititions" Type="int" Nullable="false" />
+          <Property Name="Duration" Type="time" Precision="7" Nullable="false" />
+          <Property Name="Weight" Type="float" Nullable="false" />
+        </EntityType>
+        <EntityType Name="WorkoutUsers">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Workout" Type="nvarchar" MaxLength="512" Nullable="false" />
+          <Property Name="Timestamp" Type="datetime" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="Duration" Type="time" Precision="7" Nullable="false" />
+        </EntityType>
         <Association Name="FK_MetricRecords_MetricType">
           <End Role="MetricType" Type="Self.MetricType" Multiplicity="1" />
           <End Role="MetricRecords" Type="Self.MetricRecords" Multiplicity="*" />
@@ -162,6 +200,54 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_WorkoutExercises_WorkoutExerciseCategories">
+          <End Role="WorkoutExerciseCategories" Type="Self.WorkoutExerciseCategories" Multiplicity="1" />
+          <End Role="WorkoutExercises" Type="Self.WorkoutExercises" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="WorkoutExerciseCategories">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="WorkoutExercises">
+              <PropertyRef Name="CategoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_WorkoutExercisesUsers_WorkoutExercises">
+          <End Role="WorkoutExercises" Type="Self.WorkoutExercises" Multiplicity="1" />
+          <End Role="WorkoutExercisesLInk" Type="Self.WorkoutExercisesLInk" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="WorkoutExercises">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="WorkoutExercisesLInk">
+              <PropertyRef Name="ExerciseId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_WorkoutExercisesUsers_WorkoutUsers">
+          <End Role="WorkoutUsers" Type="Self.WorkoutUsers" Multiplicity="1" />
+          <End Role="WorkoutExercisesLInk" Type="Self.WorkoutExercisesLInk" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="WorkoutUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="WorkoutExercisesLInk">
+              <PropertyRef Name="WorkoutUsersId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_WorkoutUsers_webpages_Users">
+          <End Role="webpages_Users" Type="Self.webpages_Users" Multiplicity="1" />
+          <End Role="WorkoutUsers" Type="Self.WorkoutUsers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="webpages_Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="WorkoutUsers">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="CoachItModelStoreContainer">
           <EntitySet Name="MetricClass" EntityType="Self.MetricClass" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MetricRecords" EntityType="Self.MetricRecords" Schema="dbo" store:Type="Tables" />
@@ -172,6 +258,10 @@
           <EntitySet Name="webpages_Roles" EntityType="Self.webpages_Roles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="webpages_Users" EntityType="Self.webpages_Users" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="webpages_UsersInRoles" EntityType="Self.webpages_UsersInRoles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WorkoutExerciseCategories" EntityType="Self.WorkoutExerciseCategories" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WorkoutExercises" EntityType="Self.WorkoutExercises" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WorkoutExercisesLInk" EntityType="Self.WorkoutExercisesLInk" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WorkoutUsers" EntityType="Self.WorkoutUsers" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_MetricRecords_MetricType" Association="Self.FK_MetricRecords_MetricType">
             <End Role="MetricType" EntitySet="MetricType" />
             <End Role="MetricRecords" EntitySet="MetricRecords" />
@@ -195,6 +285,22 @@
           <AssociationSet Name="fk_UserId" Association="Self.fk_UserId">
             <End Role="webpages_Users" EntitySet="webpages_Users" />
             <End Role="webpages_UsersInRoles" EntitySet="webpages_UsersInRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_WorkoutExercises_WorkoutExerciseCategories" Association="Self.FK_WorkoutExercises_WorkoutExerciseCategories">
+            <End Role="WorkoutExerciseCategories" EntitySet="WorkoutExerciseCategories" />
+            <End Role="WorkoutExercises" EntitySet="WorkoutExercises" />
+          </AssociationSet>
+          <AssociationSet Name="FK_WorkoutExercisesUsers_WorkoutExercises" Association="Self.FK_WorkoutExercisesUsers_WorkoutExercises">
+            <End Role="WorkoutExercises" EntitySet="WorkoutExercises" />
+            <End Role="WorkoutExercisesLInk" EntitySet="WorkoutExercisesLInk" />
+          </AssociationSet>
+          <AssociationSet Name="FK_WorkoutExercisesUsers_WorkoutUsers" Association="Self.FK_WorkoutExercisesUsers_WorkoutUsers">
+            <End Role="WorkoutUsers" EntitySet="WorkoutUsers" />
+            <End Role="WorkoutExercisesLInk" EntitySet="WorkoutExercisesLInk" />
+          </AssociationSet>
+          <AssociationSet Name="FK_WorkoutUsers_webpages_Users" Association="Self.FK_WorkoutUsers_webpages_Users">
+            <End Role="webpages_Users" EntitySet="webpages_Users" />
+            <End Role="WorkoutUsers" EntitySet="WorkoutUsers" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -230,7 +336,27 @@
             <End Role="webpages_Roles" EntitySet="webpages_Roles" />
             <End Role="webpages_Users" EntitySet="webpages_Users" />
           </AssociationSet>
-        </EntityContainer>
+          <EntitySet Name="WorkoutExerciseCategories" EntityType="CoachItModel.WorkoutExerciseCategory" />
+          <EntitySet Name="WorkoutExercises" EntityType="CoachItModel.WorkoutExercis" />
+          <AssociationSet Name="FK_WorkoutExercises_WorkoutExerciseCategories" Association="CoachItModel.FK_WorkoutExercises_WorkoutExerciseCategories">
+            <End Role="WorkoutExerciseCategory" EntitySet="WorkoutExerciseCategories" />
+            <End Role="WorkoutExercis" EntitySet="WorkoutExercises" />
+          </AssociationSet>
+          <EntitySet Name="WorkoutUsers" EntityType="CoachItModel.WorkoutUser" />
+          <AssociationSet Name="FK_WorkoutUsers_webpages_Users" Association="CoachItModel.FK_WorkoutUsers_webpages_Users">
+            <End Role="webpages_Users" EntitySet="webpages_Users" />
+            <End Role="WorkoutUser" EntitySet="WorkoutUsers" />
+          </AssociationSet>
+          <EntitySet Name="WorkoutExercisesLInks" EntityType="CoachItModel.WorkoutExercisesLInk" />
+          <AssociationSet Name="FK_WorkoutExercisesUsers_WorkoutExercises" Association="CoachItModel.FK_WorkoutExercisesUsers_WorkoutExercises">
+            <End Role="WorkoutExercis" EntitySet="WorkoutExercises" />
+            <End Role="WorkoutExercisesLInk" EntitySet="WorkoutExercisesLInks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_WorkoutExercisesUsers_WorkoutUsers" Association="CoachItModel.FK_WorkoutExercisesUsers_WorkoutUsers">
+            <End Role="WorkoutUser" EntitySet="WorkoutUsers" />
+            <End Role="WorkoutExercisesLInk" EntitySet="WorkoutExercisesLInks" />
+          </AssociationSet>
+          </EntityContainer>
         <EntityType Name="MetricClass">
           <Key>
             <PropertyRef Name="Id" />
@@ -317,6 +443,7 @@
           <Property Name="TelegramUserId" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="MetricRecords" Relationship="CoachItModel.FK_MetricRecords_webpages_Users" FromRole="webpages_Users" ToRole="MetricRecord" />
           <NavigationProperty Name="webpages_Roles" Relationship="CoachItModel.webpages_UsersInRoles" FromRole="webpages_Users" ToRole="webpages_Roles" />
+          <NavigationProperty Name="WorkoutUsers" Relationship="CoachItModel.FK_WorkoutUsers_webpages_Users" FromRole="webpages_Users" ToRole="WorkoutUser" />
         </EntityType>
         <Association Name="FK_MetricType_MetricClass">
           <End Type="CoachItModel.MetricClass" Role="MetricClass" Multiplicity="1" />
@@ -369,6 +496,99 @@
         <Association Name="webpages_UsersInRoles">
           <End Type="CoachItModel.webpages_Roles" Role="webpages_Roles" Multiplicity="*" />
           <End Type="CoachItModel.webpages_Users" Role="webpages_Users" Multiplicity="*" />
+        </Association>
+        <EntityType Name="WorkoutExerciseCategory">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Category" Type="String" Nullable="false" MaxLength="1024" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="WorkoutExercises" Relationship="CoachItModel.FK_WorkoutExercises_WorkoutExerciseCategories" FromRole="WorkoutExerciseCategory" ToRole="WorkoutExercis" />
+        </EntityType>
+        <EntityType Name="WorkoutExercis">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CategoryId" Type="Int32" Nullable="false" />
+          <Property Name="Exercise" Type="String" Nullable="false" MaxLength="1024" FixedLength="false" Unicode="true" />
+          <Property Name="Instructions" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="WorkoutExerciseCategory" Relationship="CoachItModel.FK_WorkoutExercises_WorkoutExerciseCategories" FromRole="WorkoutExercis" ToRole="WorkoutExerciseCategory" />
+          <NavigationProperty Name="WorkoutExercisesLInks" Relationship="CoachItModel.FK_WorkoutExercisesUsers_WorkoutExercises" FromRole="WorkoutExercis" ToRole="WorkoutExercisesLInk" />
+        </EntityType>
+        <Association Name="FK_WorkoutExercises_WorkoutExerciseCategories">
+          <End Type="CoachItModel.WorkoutExerciseCategory" Role="WorkoutExerciseCategory" Multiplicity="1" />
+          <End Type="CoachItModel.WorkoutExercis" Role="WorkoutExercis" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="WorkoutExerciseCategory">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="WorkoutExercis">
+              <PropertyRef Name="CategoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="WorkoutUser">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Workout" Type="String" Nullable="false" MaxLength="512" FixedLength="false" Unicode="true" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="webpages_Users" Relationship="CoachItModel.FK_WorkoutUsers_webpages_Users" FromRole="WorkoutUser" ToRole="webpages_Users" />
+          <NavigationProperty Name="WorkoutExercisesLInks" Relationship="CoachItModel.FK_WorkoutExercisesUsers_WorkoutUsers" FromRole="WorkoutUser" ToRole="WorkoutExercisesLInk" />
+          <Property Name="Duration" Type="Time" Nullable="false" Precision="7" />
+        </EntityType>
+        <Association Name="FK_WorkoutUsers_webpages_Users">
+          <End Type="CoachItModel.webpages_Users" Role="webpages_Users" Multiplicity="1" />
+          <End Type="CoachItModel.WorkoutUser" Role="WorkoutUser" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="webpages_Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="WorkoutUser">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="WorkoutExercisesLInk">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="WorkoutUsersId" Type="Int32" Nullable="false" />
+          <Property Name="ExerciseId" Type="Int32" Nullable="false" />
+          <Property Name="Sets" Type="Int32" Nullable="false" />
+          <Property Name="Repititions" Type="Int32" Nullable="false" />
+          <Property Name="Duration" Type="Time" Nullable="false" Precision="7" />
+          <Property Name="Weight" Type="Double" Nullable="false" />
+          <NavigationProperty Name="WorkoutExercis" Relationship="CoachItModel.FK_WorkoutExercisesUsers_WorkoutExercises" FromRole="WorkoutExercisesLInk" ToRole="WorkoutExercis" />
+          <NavigationProperty Name="WorkoutUser" Relationship="CoachItModel.FK_WorkoutExercisesUsers_WorkoutUsers" FromRole="WorkoutExercisesLInk" ToRole="WorkoutUser" />
+        </EntityType>
+        <Association Name="FK_WorkoutExercisesUsers_WorkoutExercises">
+          <End Type="CoachItModel.WorkoutExercis" Role="WorkoutExercis" Multiplicity="1" />
+          <End Type="CoachItModel.WorkoutExercisesLInk" Role="WorkoutExercisesLInk" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="WorkoutExercis">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="WorkoutExercisesLInk">
+              <PropertyRef Name="ExerciseId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_WorkoutExercisesUsers_WorkoutUsers">
+          <End Type="CoachItModel.WorkoutUser" Role="WorkoutUser" Multiplicity="1" />
+          <End Type="CoachItModel.WorkoutExercisesLInk" Role="WorkoutExercisesLInk" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="WorkoutUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="WorkoutExercisesLInk">
+              <PropertyRef Name="WorkoutUsersId" />
+            </Dependent>
+          </ReferentialConstraint>
         </Association>
         </Schema>
     </edmx:ConceptualModels>
@@ -468,6 +688,48 @@
               <ScalarProperty Name="RoleId" ColumnName="RoleId" />
             </EndProperty>
           </AssociationSetMapping>
+          <EntitySetMapping Name="WorkoutExerciseCategories">
+            <EntityTypeMapping TypeName="CoachItModel.WorkoutExerciseCategory">
+              <MappingFragment StoreEntitySet="WorkoutExerciseCategories">
+                <ScalarProperty Name="Category" ColumnName="Category" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WorkoutExercises">
+            <EntityTypeMapping TypeName="CoachItModel.WorkoutExercis">
+              <MappingFragment StoreEntitySet="WorkoutExercises">
+                <ScalarProperty Name="Instructions" ColumnName="Instructions" />
+                <ScalarProperty Name="Exercise" ColumnName="Exercise" />
+                <ScalarProperty Name="CategoryId" ColumnName="CategoryId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WorkoutUsers">
+            <EntityTypeMapping TypeName="CoachItModel.WorkoutUser">
+              <MappingFragment StoreEntitySet="WorkoutUsers">
+                <ScalarProperty Name="Duration" ColumnName="Duration" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+                <ScalarProperty Name="Workout" ColumnName="Workout" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WorkoutExercisesLInks">
+            <EntityTypeMapping TypeName="CoachItModel.WorkoutExercisesLInk">
+              <MappingFragment StoreEntitySet="WorkoutExercisesLInk">
+                <ScalarProperty Name="Weight" ColumnName="Weight" />
+                <ScalarProperty Name="Duration" ColumnName="Duration" />
+                <ScalarProperty Name="Repititions" ColumnName="Repititions" />
+                <ScalarProperty Name="Sets" ColumnName="Sets" />
+                <ScalarProperty Name="ExerciseId" ColumnName="ExerciseId" />
+                <ScalarProperty Name="WorkoutUsersId" ColumnName="WorkoutUsersId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

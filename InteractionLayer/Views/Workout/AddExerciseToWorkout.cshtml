@@ -1,0 +1,48 @@
+﻿@model InteractionLayer.Models.WorkoutExerciseManager
+
+<div class="row">
+    <div class="col-md-3">
+        <label>Category</label>
+        <br />
+        @Html.DropDownList("Exercises[" + Model.RowNumber + "].WorkoutCategoryId",
+        new SelectList(Model.WorkoutCategories.Select(a =>
+                    new SelectListItem
+                    {
+                        Value = a.Id.ToString(),
+                        Text = a.Category
+                    }).ToList(), "Value", "Text"),
+        "Select Category",
+        new { @data = Model.RowNumber, @class = "form-control" , @onChange = "SelectedCategory(this)"})
+    </div>
+
+    <div class="col-md-3">
+        <label>Exercise</label>
+        <br />
+        <input id="Exercise_@Model.RowNumber" name="Exercise" disabled class="form-control" placeholder="Select Exercise">
+    </div>
+
+    <div class="col-md-1">
+        <label>Sets</label>
+        <br />
+        <input id="Sets_@Model.RowNumber" name="Exercises[@Model.RowNumber].Sets" type="number" class="form-control" placeholder="1">
+    </div>
+
+    <div class="col-md-1">
+        <label>Repititions</label>
+        <br />
+        <input id="Repititions_@Model.RowNumber" name="Exercises[@Model.RowNumber].Repititions" type="number" class="form-control" placeholder="1">
+    </div>
+
+    <div class="col-md-2">
+        <label>Weight</label>
+        <br />
+        <input id="Weight@Model.RowNumber" name="Exercises[@Model.RowNumber].Weight" type="number" class="form-control" placeholder="1">
+    </div>
+
+    <div class="col-md-2">
+        <label>Duration</label>
+        <br />
+        <input id="Duration_@Model.RowNumber" type="time" name="Exercises[@Model.RowNumber].Duration" class="form-control" step="1" value="00:00:00" pattern="[0-9]{2}:[0-9]{2}:[0-9]{2}">
+    </div>
+</div>
+<br />

@@ -165,6 +165,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MetricsController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
+    <Compile Include="Controllers\WorkoutController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -207,6 +208,19 @@
     <Compile Include="Models\webpages_Users.cs">
       <DependentUpon>CoachIt.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\WorkoutExercis.cs">
+      <DependentUpon>CoachIt.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\WorkoutExerciseCategory.cs">
+      <DependentUpon>CoachIt.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\WorkoutExercisesLInk.cs">
+      <DependentUpon>CoachIt.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\WorkoutUser.cs">
+      <DependentUpon>CoachIt.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Workout\DetailsViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

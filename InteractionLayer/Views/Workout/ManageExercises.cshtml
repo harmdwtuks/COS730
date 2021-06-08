@@ -1,0 +1,140 @@
+﻿@model InteractionLayer.Models.WorkoutExerciseManager
+@{
+    ViewBag.Title = "ManageExercises";
+}
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<h2>Manage Exercises</h2>
+
+<form id="NewExerciseForm">
+    @Html.AntiForgeryToken()
+    <div class="row">
+        <div id="WorkoutCategory" class="col-md-3">
+            <label>Category</label>
+            <br />
+            @Html.DropDownList("WorkoutCategoryId",
+            new SelectList(Model.WorkoutCategories.Select(a =>
+                        new SelectListItem
+                        {
+                            Value = a.Id.ToString(),
+                            Text = a.Category
+                        }).ToList(), "Value", "Text"),
+            "Select Category",
+            new { @class = "form-control" })
+            <br />
+            <button id="NewCategory" class="btn btn-info">OR New Category</button>
+        </div>
+        <div id="NewWorkoutCategory" class="col-md-3 hidden">
+            <label>Category</label>
+            <br />
+            <input id="NewCategoryInput" name="NewCategoryInput" class="form-control" placeholder="Enter Category">
+            <br />
+            <div class="btn-group">
+                <button id="AddCategory" class="btn btn-primary">Add Category</button>
+                <button type="reset" class="cancel btn btn-danger">Cancel</button>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <label>Exercise</label>
+            <br />
+            <input id="Exercise" name="Exercise" class="form-control" placeholder="Enter Exercise">
+        </div>
+
+        <div class="col-md-3">
+            <label>Instrictions</label>
+            <br />
+            <textarea id="Instructions" name="Instructions" class="form-control" placeholder="Enter Instructions"></textarea>
+        </div>
+
+        <div class="col-md-3">
+            <br />
+            <button id="NewExercise" type="submit" class="btn btn-success">Add Exercise</button>
+        </div>
+    </div>
+</form>
+<br />
+<div class="row">
+    <div class="col-md-12">
+        <label>Existing Exercises</label>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <table style="width:100%">
+            <tr>
+                <th>Category</th>
+                <th>Exercise</th>
+                <th>Instructions</th>
+            </tr>
+            @foreach (var item in Model.CurrentExercises.OrderBy(z => z.WorkoutCategory).OrderBy(x => x.Exercise))
+            {
+                <tr>
+                    <td>@item.WorkoutCategory</td>
+                    <td>@item.Exercise</td>
+                    <td>@item.Instructions</td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+
+<script>
+    //function NewTypeAndClass() {
+    $(document).ready(function () {
+
+        $("#NewExercise").click(function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                type: "POST",
+                url: "/Workout/NewExercise",
+                data: $("form[id=NewExerciseForm]").serialize(),
+                datatype: "json",
+                success: function (data) {
+                    alert(data.message);
+                    //window.open('Url.Action("NewTypeAndClass", "Metrics")', _self);
+                    location.reload();
+                },
+                error: function (err) {
+                    alert(err.responseText);
+                }
+            });
+        });
+
+        $(".cancel").click(function (e) {
+            e.preventDefault();
+            location.reload();
+        });
+
+        $("#NewCategory").click(function (e) {
+            e.preventDefault();
+
+            $("#WorkoutCategory").addClass("hidden");
+            $("#NewWorkoutCategory").removeClass("hidden");
+            $("#NewExercise").addClass("hidden");
+        });
+
+        $("#AddCategory").click(function (e) {
+            e.preventDefault();
+
+            var form = $('#NewExerciseForm');
+            var token = $('input[name="__RequestVerificationToken"]', form).val();
+
+            $.ajax({
+                type: "POST",
+                url: "/Workout/NewCategory",
+                data: { __RequestVerificationToken: token, "NewCategory": $('#NewCategoryInput').val() },
+                datatype: "json",
+                success: function (data) {
+                    alert(data.message);
+                    location.reload();
+                },
+                error: function (err) {
+                    alert(err.responseText);
+                }
+            });
+        });
+    });
+</script>
