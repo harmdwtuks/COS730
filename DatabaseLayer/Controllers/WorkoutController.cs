@@ -196,19 +196,30 @@ namespace DatabaseLayer.Controllers
                         EstimatedDuration = wu.Duration
                     };
 
+                    //model.Exercises = _db.Database.SqlQuery<WorkoutExercisesLInk>($"SELECT Id, ExerciseId, Sets, Repititions, Duration, Weight FROM WorkoutExercisesLInk WHERE WorkoutUsersId = {wu.Id}").ToList();
+
                     model.Exercises = (from s in _db.WorkoutExercisesLInks
                                        where s.WorkoutUsersId == wu.Id
-                                       select s
-                                       ).ToList();
-                        //_db.WorkoutExercisesLInks.Where(x => x.WorkoutUsersId == wu.Id).ToList();
+                                       select new Exercise
+                                       {
+                                           Id = s.Id,
+                                           ExerciseId = s.ExerciseId,
+                                           Sets = s.Sets,
+                                           Repititions = s.Repititions,
+                                           Duration = s.Duration,
+                                           Weight = s.Weight
+                                       }).ToList();
+                    //_db.WorkoutExercisesLInks.Where(x => x.WorkoutUsersId == wu.Id).ToList();
 
                     modelList.Add(model);
                 }
                
-                _db.Dispose();
+                
 
                 jObjReturn.status = "OK";
                 jObjReturn.result = JsonConvert.SerializeObject(modelList);
+
+                _db.Dispose();
             }
             catch (Exception exception)
             {
@@ -240,10 +251,18 @@ namespace DatabaseLayer.Controllers
                 _db.WorkoutUsers.Add(workoutUser);
                 _db.SaveChanges();
 
-                foreach (WorkoutExercisesLInk wel in model.Exercises)
+                foreach (Exercise exer in model.Exercises)
                 {
-                    wel.WorkoutUsersId = workoutUser.Id;
-
+                    WorkoutExercisesLInk wel = new WorkoutExercisesLInk
+                    {
+                        ExerciseId = exer.ExerciseId,
+                        Duration = exer.Duration,
+                        Weight = exer.Weight,
+                        Repititions = exer.Repititions,
+                        Sets = exer.Sets,
+                        WorkoutUsersId = workoutUser.Id
+                    };
+                    
                     _db.WorkoutExercisesLInks.Add(wel);
                     _db.SaveChanges();
                 }

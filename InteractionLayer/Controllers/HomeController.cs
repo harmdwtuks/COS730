@@ -1,4 +1,5 @@
 ﻿using InteractionLayer.Models;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -63,6 +64,10 @@ namespace InteractionLayer.Controllers
                 {
                     result = reader.ReadToEnd();
                 }
+
+                JObject resultObject = JObject.Parse(result);
+
+                Session["BearerToken"] = resultObject["result"];
 
                 //result = result.Substring(1);
                 //result = result.Substring(0, result.Length - 1);

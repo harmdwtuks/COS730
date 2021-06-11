@@ -64,8 +64,11 @@ namespace InteractionLayer.Controllers
             HttpWebRequest request = WebRequest.Create(endPoint) as HttpWebRequest;
             request.ContentType = "application/json";
             request.Method = requestMethod.Trim().ToUpper(); // Normalize.
-            //request.Headers.Add("Subscription-Key", VumacamSubscriptionKey);
-            //request.Headers.Add("Authorization", "Bearer " + BearerToken);
+
+            if (Session["BearerToken"] != null)
+            {
+                request.Headers.Add("Authorization", "Bearer " + Session["BearerToken"].ToString());
+            }
 
             if (!String.IsNullOrWhiteSpace(jsonQuery))
             {
@@ -128,8 +131,7 @@ namespace InteractionLayer.Controllers
 
                     result = result.Substring(1);
                     result = result.Substring(0, result.Length - 1);
-
-                    //return Json(new { status = "FAILED", result });
+                    
                     jObj.status = "FAILED";
                     jObj.result = result;
 
@@ -138,7 +140,6 @@ namespace InteractionLayer.Controllers
             }
             catch (Exception exception)
             {
-                //return Json(new { status = "FAILED", result = exception.Message });
                 jObj.status = "FAILED";
                 jObj.result = exception.Message;
 
@@ -150,36 +151,10 @@ namespace InteractionLayer.Controllers
         {
             List<MetricClass> metricClasses = new List<MetricClass>();
 
-            // API call
-            HttpWebRequest request = WebRequest.Create(GetMetricClassesEndpoint) as HttpWebRequest;
-            request.ContentType = "application/json";
-            request.Method = "GET";
-            //request.Headers.Add("Subscription-Key", VumacamSubscriptionKey);
-            //request.Headers.Add("Authorization", "Bearer " + BearerToken);
+            JObject jObj = QueryMicroService(GetMetricClassesEndpoint, "GET", "");
             
-            HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                string result = "";
-                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-                {
-                    result = reader.ReadToEnd();
-                }
-
-                result = result.Substring(1);
-                result = result.Substring(0, result.Length - 1);
-                result = result.Replace("\\\"", "\"");
-
-                metricClasses = JsonConvert.DeserializeObject<List<MetricClass>>(result);
-
-                //return Ok(result);
-            }
-            else
-            {
-                //return BadRequest(response.StatusCode.ToString());
-            }
-
+            metricClasses = JsonConvert.DeserializeObject<List<MetricClass>>(jObj["result"].ToString());
+            
             return metricClasses;
         }
 
@@ -212,46 +187,13 @@ namespace InteractionLayer.Controllers
         {
             List<MetricType> metricTypes = new List<MetricType>();
 
-            // API call
-            HttpWebRequest request = WebRequest.Create(GetMetricTypesByIdEndpoint) as HttpWebRequest;
-            request.ContentType = "application/json";
-            request.Method = "POST";
-            //request.Headers.Add("Subscription-Key", VumacamSubscriptionKey);
-            //request.Headers.Add("Authorization", "Bearer " + BearerToken);
-            
             string JsonQuery = "{" +
                                 "\"id\":\"" + id + "\"," +
                                "}";
 
-            using (StreamWriter writer = new StreamWriter(request.GetRequestStream()))
-            {
-                writer.Write(JsonQuery);
-                writer.Flush();
-                writer.Close();
-            }
+            JObject jObj = QueryMicroService(GetMetricTypesByIdEndpoint, "POST", JsonQuery);
 
-            HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                string result = "";
-                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-                {
-                    result = reader.ReadToEnd();
-                }
-
-                result = result.Substring(1);
-                result = result.Substring(0, result.Length - 1);
-                result = result.Replace("\\\"", "\"");
-
-                metricTypes = JsonConvert.DeserializeObject<List<MetricType>>(result);
-
-                //return Ok(result);
-            }
-            else
-            {
-                //return BadRequest(response.StatusCode.ToString());
-            }
+            metricTypes = JsonConvert.DeserializeObject<List<MetricType>>(jObj["result"].ToString());
 
             return metricTypes;
         }
@@ -265,49 +207,13 @@ namespace InteractionLayer.Controllers
 
         private string GetMetricUnitByTypeId(int id)
         {
-            string result = "";
-
-            // API call
-            HttpWebRequest request = WebRequest.Create(GetMetricUnitByTypeIdEndpoint) as HttpWebRequest;
-            request.ContentType = "application/json";
-            request.Method = "POST";
-            //request.Headers.Add("Subscription-Key", VumacamSubscriptionKey);
-            //request.Headers.Add("Authorization", "Bearer " + BearerToken);
-
             string JsonQuery = "{" +
                                 "\"id\":\"" + id + "\"," +
                                "}";
 
-            using (StreamWriter writer = new StreamWriter(request.GetRequestStream()))
-            {
-                writer.Write(JsonQuery);
-                writer.Flush();
-                writer.Close();
-            }
+            JObject jObj = QueryMicroService(GetMetricUnitByTypeIdEndpoint, "POST", JsonQuery);
 
-            HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-                {
-                    result = reader.ReadToEnd();
-                }
-
-                result = result.Substring(1);
-                result = result.Substring(0, result.Length - 1);
-                result = result.Replace("\\\"", "");
-
-                //metricTypes = JsonConvert.DeserializeObject<List<MetricType>>(result);
-
-                //return Ok(result);
-            }
-            else
-            {
-                //return BadRequest(response.StatusCode.ToString());
-            }
-
-            return result;
+            return jObj["result"].ToString().Replace("\"", "");
         }
 
         public ActionResult GetMetricUnitByType(int id)

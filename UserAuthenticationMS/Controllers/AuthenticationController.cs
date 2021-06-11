@@ -1,13 +1,11 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
-using System.Web;
 using System.Web.Http;
 using System.Web.Security;
 using UserAuthenticationMS.Models;
 using WebMatrix.WebData;
+using System.Security.Claims;
 
 namespace UserAuthenticationMS.Controllers
 {
@@ -58,7 +56,6 @@ namespace UserAuthenticationMS.Controllers
         public IHttpActionResult Login([FromBody] JObject jsonResult)
         {
             Login model = jsonResult.ToObject<Login>();
-            string returnUrl;
 
             if (!ModelState.IsValid)
             {
@@ -71,10 +68,12 @@ namespace UserAuthenticationMS.Controllers
                 //Session["USERSEMAILADDRESS"] = EncryptText(model.Username);
                 //Session["USERSPASSWORD"] = EncryptText(model.Password);
                 //Session["OTPAuthorized"] = false;
-                
+
                 ///TODO: Generate and send bearer token here
 
-                return Ok();
+                JObject jAuthObj = AuthorisationController.GetToken();
+
+                return Ok(jAuthObj);
             }
             else
             {

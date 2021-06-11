@@ -11,9 +11,11 @@ using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Web.Http.Results;
-
+using System.Security.Claims;
+ 
 namespace MetricsMS.Controllers
 {
+    [Authorize]
     [RoutePrefix("api/metrics")]
     public class MetricsController : ApiController
     {
@@ -76,9 +78,13 @@ namespace MetricsMS.Controllers
                     }
                     else
                     {
+                        JObject fromObj = JObject.Parse(result);
 
+                        if (fromObj["status"].ToString() == "OK")
+                        {
+                            result = fromObj["result"].ToString();
+                        }
                     }
-                    //result = result.Replace("\\\"", "\"");
 
                     jObj.status = "OK";
                     jObj.result = result;
@@ -87,16 +93,8 @@ namespace MetricsMS.Controllers
                 }
                 else
                 {
-                    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-                    {
-                        result = reader.ReadToEnd();
-                    }
-
-                    result = result.Substring(1);
-                    result = result.Substring(0, result.Length - 1);
-
                     jObj.status = "FAILED";
-                    jObj.result = result;
+                    jObj.result = response.StatusDescription;
 
                     return jObj;
                 }
@@ -120,8 +118,6 @@ namespace MetricsMS.Controllers
             HttpWebRequest request = WebRequest.Create(GetMetricClassesEndpoint) as HttpWebRequest;
             request.ContentType = "text/json";
             request.Method = "GET";
-            //request.Headers.Add("Subscription-Key", VumacamSubscriptionKey);
-            //request.Headers.Add("Authorization", "Bearer " + BearerToken);
             
             HttpWebResponse response = request.GetResponse() as HttpWebResponse;
 

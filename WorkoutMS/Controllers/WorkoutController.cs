@@ -77,7 +77,6 @@ namespace WorkoutMS.Controllers
                             result = fromObj["result"].ToString();
                         }
                     }
-                    //result = result.Replace("\\\"", "\"");
 
                     jObj.status = "OK";
                     jObj.result = result;
@@ -86,16 +85,8 @@ namespace WorkoutMS.Controllers
                 }
                 else
                 {
-                    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-                    {
-                        result = reader.ReadToEnd();
-                    }
-
-                    result = result.Substring(1);
-                    result = result.Substring(0, result.Length - 1);
-
                     jObj.status = "FAILED";
-                    jObj.result = result;
+                    jObj.result = response.StatusDescription;
 
                     return jObj;
                 }

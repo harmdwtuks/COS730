@@ -10,6 +10,6 @@ namespace DatabaseLayer.Models.Workout
         public string WorkoutTitle { get; set; }
         public TimeSpan EstimatedDuration { get; set; }
 
-        public List<WorkoutExercisesLInk> Exercises { get; set; }
+        public List<Exercise> Exercises { get; set; }
     }
 }

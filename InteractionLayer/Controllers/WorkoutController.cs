@@ -98,8 +98,7 @@ namespace InteractionLayer.Controllers
 
                     result = result.Substring(1);
                     result = result.Substring(0, result.Length - 1);
-
-                    //return Json(new { status = "FAILED", result });
+                    
                     jObj.status = "FAILED";
                     jObj.result = result;
 
@@ -108,7 +107,6 @@ namespace InteractionLayer.Controllers
             }
             catch (Exception exception)
             {
-                //return Json(new { status = "FAILED", result = exception.Message });
                 jObj.status = "FAILED";
                 jObj.result = exception.Message;
 

@@ -221,6 +221,7 @@
       <DependentUpon>CoachIt.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Workout\DetailsViewModel.cs" />
+    <Compile Include="Models\Workout\Exercise.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
