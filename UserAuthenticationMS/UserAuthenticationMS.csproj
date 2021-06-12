@@ -240,7 +240,7 @@
     <Compile Include="Models\webpages_Users.cs">
       <DependentUpon>CoachIt.tt</DependentUpon>
     </Compile>
-    <Compile Include="OWINStartup.cs" />
+    <Compile Include="Startup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

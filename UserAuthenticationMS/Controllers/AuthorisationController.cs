@@ -9,42 +9,49 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using System.Configuration;
 
 namespace UserAuthenticationMS.Controllers
 {
     public class AuthorisationController : ApiController
     {
-        public static JObject GetToken()
-        {
-            string key = "my_secret_key_12345"; //Secret key which will be used later during validation    
-            var issuer = "http://mysite.com";  //normally this will be your site URL    
+        private static readonly string JwtKey = ConfigurationManager.AppSettings["JwtAuthentication:SecurityKey"];
+        private static readonly string JwtIssuer = ConfigurationManager.AppSettings["JwtAuthentication:Issuer"];
+        private static readonly string JwtAudience = ConfigurationManager.AppSettings["JwtAuthentication:Audience"];
+        private static readonly string JwtExpiration = ConfigurationManager.AppSettings["JwtAuthentication:MinutesToExpire"];
 
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+        public static JObject GetToken(List<KeyValuePair<string, string>> claims)
+        {
+            //string key = "my_secret_key_12345"; //Secret key which will be used later during validation    
+            //var issuer = "http://mysite.com";  //normally this will be your site URL    
+
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             //Create a List of Claims, Keep claims name short    
             var permClaims = new List<Claim>();
             permClaims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
-            permClaims.Add(new Claim("valid", "1"));
-            permClaims.Add(new Claim("userid", "1"));
-            permClaims.Add(new Claim("name", "bilal"));
+
+            foreach (KeyValuePair<string, string> claim in claims)
+            {
+                permClaims.Add(new Claim(claim.Key, claim.Value));
+            }
 
             //Create Security Token object by giving required parameters    
-            var token = new JwtSecurityToken(issuer, //Issure    
-                            issuer,  //Audience    
-                            permClaims,
-                            expires: DateTime.Now.AddDays(1),
-                            signingCredentials: credentials);
-            var jwt_token = new JwtSecurityTokenHandler().WriteToken(token);
+            JwtSecurityToken token = new JwtSecurityToken(JwtIssuer,  
+                                        JwtAudience,
+                                        permClaims,
+                                        expires: DateTime.Now.AddMinutes(Convert.ToInt32(JwtExpiration)),
+                                        signingCredentials: credentials);
+
+            string jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
 
             dynamic jObj = new JObject();
 
             jObj.status = "OK";
-            jObj.result = jwt_token;
+            jObj.result = jwtToken;
 
             return jObj;
-
-            //return new { data = jwt_token };
         }
     }
 }

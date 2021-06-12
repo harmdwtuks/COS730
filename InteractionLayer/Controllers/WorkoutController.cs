@@ -34,8 +34,11 @@ namespace InteractionLayer.Controllers
             System.Net.HttpWebRequest request = WebRequest.Create(endPoint) as HttpWebRequest;
             request.ContentType = "application/json";
             request.Method = requestMethod.Trim().ToUpper(); // Normalize.
-            //request.Headers.Add("Subscription-Key", VumacamSubscriptionKey);
-            //request.Headers.Add("Authorization", "Bearer " + BearerToken);
+
+            if (Session["BearerToken"] != null)
+            {
+                request.Headers.Add("Authorization", "Bearer " + Session["BearerToken"].ToString());
+            }
 
             if (!String.IsNullOrWhiteSpace(jsonQuery))
             {
@@ -113,8 +116,7 @@ namespace InteractionLayer.Controllers
                 return jObj;
             }
         }
-
-
+        
         // GET: Workout
         public ActionResult Index()
         {

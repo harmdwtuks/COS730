@@ -6,6 +6,7 @@ using Microsoft.Owin.Security.Jwt;
 using Microsoft.Owin.Security;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Configuration;
 
 [assembly: OwinStartup(typeof(UserAuthenticationMS.Startup))]
 
@@ -13,6 +14,10 @@ namespace UserAuthenticationMS
 {
     public class Startup
     {
+        private static readonly string JwtKey = ConfigurationManager.AppSettings["JwtAuthentication:SecurityKey"];
+        private static readonly string JwtIssuer = ConfigurationManager.AppSettings["JwtAuthentication:Issuer"];
+        private static readonly string JwtAudience = ConfigurationManager.AppSettings["JwtAuthentication:Audience"];
+
         public void Configuration(IAppBuilder app)
         {
             app.UseJwtBearerAuthentication(
@@ -24,9 +29,9 @@ namespace UserAuthenticationMS
                         ValidateIssuer = true,
                         ValidateAudience = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = "http://mysite.com", //some string, normally web url,  
-                        ValidAudience = "http://mysite.com",
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("my_secret_key_12345"))
+                        ValidIssuer = JwtIssuer, // Some string, usually the site url.
+                        ValidAudience = JwtAudience,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtKey))
                     }
                 });
         }

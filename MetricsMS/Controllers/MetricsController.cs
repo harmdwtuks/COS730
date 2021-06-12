@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Net;
-//using System.Web.Mvc;
 using MetricsMS.Models;
 using System.Web.Http;
 using System.Configuration;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Web.Http.Results;
 using System.Security.Claims;
- 
+
 namespace MetricsMS.Controllers
 {
     [Authorize]
@@ -30,6 +27,21 @@ namespace MetricsMS.Controllers
         private static readonly string CreateClassEndpoint = ConfigurationManager.AppSettings["CreateClassEndpoint"];
         private static readonly string CreateUnitEndpoint = ConfigurationManager.AppSettings["CreateUnitEndpoint"];
 
+        public string GetPropertyFromClaims(string property)
+        {
+            ClaimsIdentity identity = User.Identity as ClaimsIdentity;
+
+            if (identity != null)
+            {
+                IEnumerable<Claim> claims = identity.Claims;
+                string value = claims.Where(p => p.Type == property).FirstOrDefault()?.Value;
+
+                return value;
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Generic API call funtion.
         /// </summary>
@@ -43,8 +55,6 @@ namespace MetricsMS.Controllers
             HttpWebRequest request = WebRequest.Create(endPoint) as HttpWebRequest;
             request.ContentType = "application/json";
             request.Method = requestMethod.Trim().ToUpper(); // Normalize.
-            //request.Headers.Add("Subscription-Key", VumacamSubscriptionKey);
-            //request.Headers.Add("Authorization", "Bearer " + BearerToken);
 
             if (!String.IsNullOrWhiteSpace(jsonQuery))
             {
@@ -349,7 +359,7 @@ namespace MetricsMS.Controllers
 
 
             string JsonQuery = "{" +
-                                "\"userId\":\"" + "1" + "\"," +
+                                "\"userId\":\"" + GetPropertyFromClaims("UserId") + "\"," +
                                 "\"dateFrom\":\"" + timestamp + "\"," +
                                 "\"dateTo\":\"" + timestamp + "\"," +
                                 "\"metricTypeId\":\"" + type + "\"," +
@@ -403,7 +413,7 @@ namespace MetricsMS.Controllers
 
 
             string JsonQuery = "{" +
-                                "\"userId\":\"" + "1" + "\"," +
+                                "\"userId\":\"" + GetPropertyFromClaims("UserId") + "\"," +
                                 "\"timestamp\":\"" + newRec.Timestamp + "\"," +
                                 "\"metricTypeId\":\"" + newRec.MetricType + "\"," +
                                 "\"measurement\":\"" + newRec.Quantity + "\"," +

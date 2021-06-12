@@ -6,6 +6,7 @@ using System.Web.Security;
 using UserAuthenticationMS.Models;
 using WebMatrix.WebData;
 using System.Security.Claims;
+using System.Collections.Generic;
 
 namespace UserAuthenticationMS.Controllers
 {
@@ -64,14 +65,15 @@ namespace UserAuthenticationMS.Controllers
             
             if (WebSecurity.Login(model.Username, model.Password, false))
             {
-                //WebSecurity.Logout();
-                //Session["USERSEMAILADDRESS"] = EncryptText(model.Username);
-                //Session["USERSPASSWORD"] = EncryptText(model.Password);
-                //Session["OTPAuthorized"] = false;
+                CoachItEntities _db = new CoachItEntities();
+                webpages_Users user = _db.webpages_Users.First(x => x.Username == model.Username);
 
-                ///TODO: Generate and send bearer token here
+                List<KeyValuePair<string, string>> claimsForToken = new List<KeyValuePair<string, string>>();
+                claimsForToken.Add(new KeyValuePair<string, string>("UserId", user.UserId.ToString()));
 
-                JObject jAuthObj = AuthorisationController.GetToken();
+                _db.Dispose();
+
+                JObject jAuthObj = AuthorisationController.GetToken(claimsForToken);
 
                 return Ok(jAuthObj);
             }

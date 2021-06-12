@@ -8,9 +8,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Configuration;
 
-[assembly: OwinStartup(typeof(MetricsMS.Startup))]
+[assembly: OwinStartup(typeof(WorkoutMS.Startup))]
 
-namespace MetricsMS
+namespace WorkoutMS
 {
     public class Startup
     {

@@ -6,12 +6,13 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using WorkoutMS.Models;
+using System.Security.Claims;
 
 namespace WorkoutMS.Controllers
 {
+    [Authorize]
     [RoutePrefix("api/workouts")]
     public class WorkoutController : ApiController
     {
