@@ -1,0 +1,45 @@
+﻿@model InteractionLayer.Models.Accounts.Team
+
+@{
+    ViewBag.Title = "CreateTeam";
+}
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<h2>Create Team</h2>
+
+<form id="NewTeam">
+    @Html.AntiForgeryToken()
+    <div class="row">
+        <div class="col-md-12">
+            <label>Team Name</label>
+            <br />
+            <input id="TeamName" name="TeamName" class="form-control" placeholder="Enter Team Name">
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+            <button id="CreateTeam" type="submit" class="btn btn-success">Create Team</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    $("#CreateTeam").click(function (e) {
+        e.preventDefault();
+
+        $.ajax({
+            type: "POST",
+            url: "/Accounts/CreateTeam",
+            datatype: "json",
+            data: $("form[id=NewTeam]").serialize(),
+            success: function (data) {
+                alert(data.message);
+            },
+            error: function (err) {
+                alert(err.responseText);
+            }
+        });
+    });
+</script>

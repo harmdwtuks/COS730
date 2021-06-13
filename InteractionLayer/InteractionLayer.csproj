@@ -160,12 +160,17 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\AccountsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MetricsController.cs" />
     <Compile Include="Controllers\WorkoutController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Accounts\ResetPassword.cs" />
+    <Compile Include="Models\Accounts\Role.cs" />
+    <Compile Include="Models\Accounts\Team.cs" />
+    <Compile Include="Models\Accounts\User.cs" />
     <Compile Include="Models\Login.cs" />
     <Compile Include="Models\MetricClasses.cs" />
     <Compile Include="Models\MetricRecord.cs" />
@@ -228,6 +233,9 @@
     <Content Include="Views\Workout\CreateWorkout.cshtml" />
     <Content Include="Views\Workout\AddExerciseToWorkout.cshtml" />
     <Content Include="Views\Workout\GetExercisesForCategory.cshtml" />
+    <Content Include="Views\Accounts\CreateTeam.cshtml" />
+    <Content Include="Views\Accounts\AddUser.cshtml" />
+    <Content Include="Views\Accounts\SetPassword.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

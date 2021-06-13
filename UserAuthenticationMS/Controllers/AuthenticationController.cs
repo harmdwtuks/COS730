@@ -7,6 +7,8 @@ using UserAuthenticationMS.Models;
 using WebMatrix.WebData;
 using System.Security.Claims;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using UserAuthenticationMS.Helpers;
 
 namespace UserAuthenticationMS.Controllers
 {
@@ -19,36 +21,69 @@ namespace UserAuthenticationMS.Controllers
         [Route("NewUser")]
         public IHttpActionResult NewUser([FromBody] JObject jsonResult)
         {
+            dynamic jObj = new JObject();
+
             try
             {
                 string Username = jsonResult["Username"].ToString();
+                string Nickname = jsonResult["Nickname"].ToString();
                 string EmailAddress = jsonResult["EmailAddress"].ToString();
-                string ContactNumber = jsonResult["ContactNumber"].ToString();
-                string FirstName = jsonResult["FirstName"].ToString();
-                string Surname = jsonResult["Surname"].ToString();
-                string[] Roles = jsonResult["Roles"].ToObject<string[]>();
+                string ContactNumber = jsonResult["TelephoneNumber"].ToString();
+                string FullNames = jsonResult["FullNames"].ToString();
+                string LastName = jsonResult["LastName"].ToString();
 
+                int userRole = Convert.ToInt32(jsonResult["RoleId"].ToString());
+                
                 WebSecurity.CreateUserAndAccount(
                     Username, 
                     Membership.GeneratePassword(128, 30),
                     new
                     {
-                        FirstName = FirstName,
-                        Surname = Surname,
+                        FirstName = FullNames,
+                        Surname = LastName,
                         EmailAddress = EmailAddress,
                         ContactNumber = ContactNumber
                     });
 
-                //string body = System.IO.File.ReadAllText(Server.MapPath("/Helpers/MailTemplates/Registration.html"));
-                //string setPasswordLink = Url.Action("SetPassword", "Account", new { Key = WebSecurity.GeneratePasswordResetToken(Username, 120) }, Request.Url.Scheme);
-                //Mail.Send(EmailAddress, instanceName + " - Registration", body);
+                CoachItEntities _db = new CoachItEntities();
+                string[] userRoles = _db.webpages_Roles.Where(x => x.RoleId == userRole).Select(z => z.RoleName).ToArray();
+                _db.Dispose();
 
-                return Ok();
+                Roles.AddUserToRoles(Username, userRoles);
+                
+                string body = System.IO.File.ReadAllText(System.Web.HttpContext.Current.Request.MapPath("~/Helpers/MailTemplates/NewUser.html"));
+                body = body.Replace("#NAME#", FullNames)
+                        .Replace("#USERNAME#", Username)
+                        .Replace("#EXPIRATIONDATE#", DateTime.Now.AddHours(2).ToString("yyyy/MM/dd hh:mm tt"));
+
+                var re = Request;
+                var headers = re.Headers;
+
+                if (headers.Contains("SetPasswordURI"))
+                {
+                    string setPasswordURI = $"{headers.GetValues("SetPasswordURI").First()}?Key={WebSecurity.GeneratePasswordResetToken(Username, 120)}";
+                    body = body.Replace("#LINK#", setPasswordURI);
+
+                    jObj.result = setPasswordURI;
+                }
+
+                if (headers.Contains("ForgotPasswordURI"))
+                {
+                    string setPasswordURI = headers.GetValues("ForgotPasswordURI").First();
+                    body = body.Replace("#FORGOTPASSWORDLINK#", $"{setPasswordURI}");
+                }
+
+                Mail.Send(EmailAddress, "CoachIt - Registration", body);
+
+                jObj.status = "OK";
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                jObj.status = "FAILED";
+                jObj.result = ex.Message;
             }
+
+            return Ok(jObj);
         }
         
         [AllowAnonymous]
@@ -142,21 +177,67 @@ namespace UserAuthenticationMS.Controllers
         [Route("SetPassword")]
         public IHttpActionResult SetPassword([FromBody] JObject jsonResult)
         {
-            ResetPassword model = jsonResult.ToObject<ResetPassword>();
+            dynamic jObjReturn = new JObject();
 
-            if (!ModelState.IsValid)
+            try
             {
-                //return View(model);
-                return BadRequest();
+                ResetPassword model = jsonResult.ToObject<ResetPassword>();
+
+                if (!ModelState.IsValid)
+                {
+                    jObjReturn.status = "FAILED";
+                    jObjReturn.result = $"Input is not valid.";
+                }
+                else if (WebSecurity.ResetPassword(model.Key, model.Password))
+                {
+                    jObjReturn.status = "OK";
+                    jObjReturn.result = "Password set successful";
+                }
+                else
+                {
+                    jObjReturn.status = "FAILED";
+                    jObjReturn.result = $"Link expired.";
+                }
             }
-            else if (WebSecurity.ResetPassword(model.Key, model.Password))
+            catch (Exception exception)
             {
-                //return RedirectToAction("Login");
-                return Ok();
+                jObjReturn.status = "FAILED";
+                jObjReturn.result = $"Could not set password.\n{exception.Message}";
             }
-            //ViewBag.Message = "This token has expired. Please do a forgot password <a href='" + Url.Action("ForgotPassword") + "'>here</a>";
-            //return View(model);
-            return BadRequest();
+
+            return Ok(jObjReturn);
+        }
+
+        [HttpGet]
+        [Route("Roles")]
+        public IHttpActionResult AvailableRoles()
+        {
+            dynamic jObjReturn = new JObject();
+
+            try
+            {
+                CoachItEntities _db = new CoachItEntities();
+
+                var existingRoles =
+                        (from s in _db.webpages_Roles
+                         select new
+                         {
+                             Id = s.RoleId,
+                             RoleName = s.RoleName
+                         }).ToList();
+
+                _db.Dispose();
+
+                jObjReturn.status = "OK";
+                jObjReturn.result = JsonConvert.SerializeObject(existingRoles);
+            }
+            catch (Exception exception)
+            {
+                jObjReturn.status = "FAILED";
+                jObjReturn.result = $"Could get Roles.\n{exception.Message}";
+            }
+
+            return Ok(jObjReturn);
         }
     }
 }

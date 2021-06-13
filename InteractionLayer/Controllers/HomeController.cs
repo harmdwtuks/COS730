@@ -16,6 +16,102 @@ namespace InteractionLayer.Controllers
     {
         private static readonly string LoginEndpoint = ConfigurationManager.AppSettings["LoginEndpoint"];
 
+        /// <summary>
+        /// Generic API call funtion.
+        /// </summary>
+        /// <param name="endPoint">API funtion URL</param>
+        /// <param name="requestMethod">HTTP Method (GET/POST/OTHER)</param>
+        /// <param name="jsonQuery">JSON to be sent with the API call</param>
+        /// <returns>JSON tuple containing the call status and the result</returns>
+        private JObject QueryMicroService(string endPoint, string requestMethod = "GET", string jsonQuery = "")
+        {
+            // API call
+            HttpWebRequest request = WebRequest.Create(endPoint) as HttpWebRequest;
+            request.ContentType = "application/json";
+            request.Method = requestMethod.Trim().ToUpper(); // Normalize.
+
+            if (Session["BearerToken"] != null)
+            {
+                request.Headers.Add("Authorization", "Bearer " + Session["BearerToken"].ToString());
+            }
+
+            if (!String.IsNullOrWhiteSpace(jsonQuery))
+            {
+                using (StreamWriter writer = new StreamWriter(request.GetRequestStream()))
+                {
+                    writer.Write(jsonQuery);
+                    writer.Flush();
+                    writer.Close();
+                }
+            }
+
+            dynamic jObj = new JObject();
+
+            try
+            {
+                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+
+                string result;
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                    {
+                        result = reader.ReadToEnd();
+                    }
+
+                    if (result.StartsWith("\""))
+                    {
+                        result = result.Substring(1);
+                        result = result.Substring(0, result.Length - 1);
+                        result = result.Replace("\\\"", "\"");
+
+                        jObj.status = "OK";
+                        jObj.result = result;
+                    }
+                    else
+                    {
+                        JObject resultObject = JObject.Parse(result);
+
+                        if (resultObject["status"].ToString() == "OK")
+                        {
+                            jObj.status = "OK";
+                            jObj.result = resultObject["result"].ToString();
+                        }
+                        else
+                        {
+                            jObj.status = "FAILED";
+                            jObj.result = resultObject["result"].ToString();
+                        }
+                    }
+
+                    return jObj;
+                }
+                else
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                    {
+                        result = reader.ReadToEnd();
+                    }
+
+                    result = result.Substring(1);
+                    result = result.Substring(0, result.Length - 1);
+
+                    jObj.status = "FAILED";
+                    jObj.result = result;
+
+                    return jObj;
+                }
+            }
+            catch (Exception exception)
+            {
+                jObj.status = "FAILED";
+                jObj.result = exception.Message;
+
+                return jObj;
+            }
+        }
+
         [HttpGet, AllowAnonymous]
         public ActionResult Index()
         {
@@ -35,57 +131,61 @@ namespace InteractionLayer.Controllers
 
         private string LogIn(Login login)
         {
-            string result = "";
-
-            // API call
-            HttpWebRequest request = WebRequest.Create(LoginEndpoint) as HttpWebRequest;
-            request.ContentType = "application/json";
-            request.Method = "POST";
-            //request.Headers.Add("Subscription-Key", VumacamSubscriptionKey);
-            //request.Headers.Add("Authorization", "Bearer " + BearerToken);
-
             string JsonQuery = "{" +
                                 $"\"Username\":\"{login.Username}\"," +
                                 $"\"Password\": \"{login.Password}\"" +
                                "}";
 
-            using (StreamWriter writer = new StreamWriter(request.GetRequestStream()))
+            JObject jObj = QueryMicroService(LoginEndpoint, "POST", JsonQuery);
+
+            if (jObj["status"].ToString() == "OK")
             {
-                writer.Write(JsonQuery);
-                writer.Flush();
-                writer.Close();
-            }
+                Session["BearerToken"] = jObj["result"];
 
-            HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-                {
-                    result = reader.ReadToEnd();
-                }
-
-                JObject resultObject = JObject.Parse(result);
-
-                Session["BearerToken"] = resultObject["result"];
-
-                //result = result.Substring(1);
-                //result = result.Substring(0, result.Length - 1);
-                //result = result.Replace("\\\"", "");
-
-                //metricTypes = JsonConvert.DeserializeObject<List<MetricType>>(result);
-
-                //return Ok(result);
                 return "Logged In";
             }
             else
             {
-                //return BadRequest(response.StatusCode.ToString());
+                return jObj["result"].ToString();
             }
 
-            return result;
+            //string result = "";
 
-            //return "Success";
+            //// API call
+            //HttpWebRequest request = WebRequest.Create(LoginEndpoint) as HttpWebRequest;
+            //request.ContentType = "application/json";
+            //request.Method = "POST";
+
+
+
+            //using (StreamWriter writer = new StreamWriter(request.GetRequestStream()))
+            //{
+            //    writer.Write(JsonQuery);
+            //    writer.Flush();
+            //    writer.Close();
+            //}
+
+            //HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+
+            //if (response.StatusCode == HttpStatusCode.OK)
+            //{
+            //    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            //    {
+            //        result = reader.ReadToEnd();
+            //    }
+
+            //    JObject resultObject = JObject.Parse(result);
+
+            //    Session["BearerToken"] = resultObject["result"];
+
+            //    return "Logged In";
+            //}
+            //else
+            //{
+            //    //return BadRequest(response.StatusCode.ToString());
+            //}
+
+            //return result;
         }
 
         public ActionResult About()
