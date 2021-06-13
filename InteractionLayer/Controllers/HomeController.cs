@@ -148,44 +148,6 @@ namespace InteractionLayer.Controllers
             {
                 return jObj["result"].ToString();
             }
-
-            //string result = "";
-
-            //// API call
-            //HttpWebRequest request = WebRequest.Create(LoginEndpoint) as HttpWebRequest;
-            //request.ContentType = "application/json";
-            //request.Method = "POST";
-
-
-
-            //using (StreamWriter writer = new StreamWriter(request.GetRequestStream()))
-            //{
-            //    writer.Write(JsonQuery);
-            //    writer.Flush();
-            //    writer.Close();
-            //}
-
-            //HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-
-            //if (response.StatusCode == HttpStatusCode.OK)
-            //{
-            //    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-            //    {
-            //        result = reader.ReadToEnd();
-            //    }
-
-            //    JObject resultObject = JObject.Parse(result);
-
-            //    Session["BearerToken"] = resultObject["result"];
-
-            //    return "Logged In";
-            //}
-            //else
-            //{
-            //    //return BadRequest(response.StatusCode.ToString());
-            //}
-
-            //return result;
         }
 
         public ActionResult About()

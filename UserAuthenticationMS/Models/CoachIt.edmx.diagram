@@ -10,6 +10,11 @@
         <EntityTypeShape EntityType="CoachItModel.webpages_Roles" Width="1.5" PointX="0.75" PointY="1.375" IsExpanded="true" />
         <EntityTypeShape EntityType="CoachItModel.webpages_Users" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
         <AssociationConnector Association="CoachItModel.webpages_UsersInRoles" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="CoachItModel.Team" Width="1.5" PointX="5.25" PointY="1.375" />
+        <EntityTypeShape EntityType="CoachItModel.TeamsUser" Width="1.5" PointX="7.5" PointY="1.375" />
+        <AssociationConnector Association="CoachItModel.FK_Teams_webpages_Users" />
+        <AssociationConnector Association="CoachItModel.FK_TeamsUsers_Teams" />
+        <AssociationConnector Association="CoachItModel.FK_TeamsUsers_webpages_Users" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

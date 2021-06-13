@@ -12,28 +12,20 @@ namespace UserAuthenticationMS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class webpages_Users
+    public partial class Team
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public webpages_Users()
+        public Team()
         {
-            this.webpages_Roles = new HashSet<webpages_Roles>();
-            this.Teams = new HashSet<Team>();
             this.TeamsUsers = new HashSet<TeamsUser>();
         }
     
-        public int UserId { get; set; }
-        public string Username { get; set; }
-        public string FirstName { get; set; }
-        public string Surname { get; set; }
-        public string EmailAddress { get; set; }
-        public string ContactNumber { get; set; }
-        public string TelegramUserId { get; set; }
+        public int Id { get; set; }
+        public string TeamName { get; set; }
+        public System.DateTime Timestamp { get; set; }
+        public int CreatorId { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<webpages_Roles> webpages_Roles { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Team> Teams { get; set; }
+        public virtual webpages_Users webpages_Users { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TeamsUser> TeamsUsers { get; set; }
     }

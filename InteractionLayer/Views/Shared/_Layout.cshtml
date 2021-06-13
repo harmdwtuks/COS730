@@ -3,40 +3,61 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <title>CoachIt</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                <a class="navbar-brand" href="@(Url.Action("Index", "Home"))">CoachIt</a>
             </div>
-            <div class="navbar-collapse collapse">
+            <div class="collapse navbar-collapse" id="myNavbar">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                    <li>@Html.ActionLink("Add Metric", "RecordMetric", "Metrics")</li>
-                    <li>@Html.ActionLink("View Metrics", "Index", "Metrics")</li>
-                    <li>@Html.ActionLink("New Metric", "NewTypeAndClass", "Metrics")</li>
-                    <li>@Html.ActionLink("Manage Exercises", "ManageExercises", "Workout")</li>
-                    <li>@Html.ActionLink("Create Workout", "CreateWorkout", "Workout")</li>
+                    <li><a href="@(Url.Action("Index", "Home"))">Home</a></li>
+                    @*<li><a href="@(Url.Action("About", "Home"))">About</a></li>
+                    <li><a href="@(Url.Action("Contact", "Home"))">Contact</a></li>*@
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Metrics<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="@(Url.Action("Index", "Metrics"))">View</a></li>
+                            <li><a href="@(Url.Action("RecordMetric", "Metrics"))">Record</a></li>
+                            <li><a href="@(Url.Action("NewTypeAndClass", "Metrics"))">Manage</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Workouts<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="@(Url.Action("ManageExercises", "Workout"))">Manage Exercises</a></li>
+                            <li><a href="@(Url.Action("CreateWorkout", "Workout"))">Create Workout</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Users<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="@(Url.Action("AddUser", "Accounts"))">New User</a></li>
+                            <li><a href="@(Url.Action("CreateTeam", "Accounts"))">New Team</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
                 </ul>
             </div>
         </div>
-    </div>
+    </nav>
     <div class="container body-content">
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+            <p>&copy; @DateTime.Now.Year - <i>CoachIt</i></p>
         </footer>
     </div>
 

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace InteractionLayer.Models.Accounts
+namespace UserAuthenticationMS.Models
 {
-    public class User
+    public class UserViewModel
     {
         public int UserId { get; set; }
         public string Username { get; set; }
@@ -20,8 +20,7 @@ namespace InteractionLayer.Models.Accounts
         public int RoleId { get; set; }
         public int[] TeamIds { get; set; }
 
-        public List<Role> Roles { get; set; }
+        public List<webpages_Roles> Roles { get; set; }
         public List<Team> Teams { get; set; }
     }
-    
 }

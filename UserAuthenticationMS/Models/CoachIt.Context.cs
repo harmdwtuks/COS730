@@ -29,5 +29,7 @@ namespace UserAuthenticationMS.Models
         public virtual DbSet<webpages_OAuthMembership> webpages_OAuthMembership { get; set; }
         public virtual DbSet<webpages_Roles> webpages_Roles { get; set; }
         public virtual DbSet<webpages_Users> webpages_Users { get; set; }
+        public virtual DbSet<Team> Teams { get; set; }
+        public virtual DbSet<TeamsUser> TeamsUsers { get; set; }
     }
 }

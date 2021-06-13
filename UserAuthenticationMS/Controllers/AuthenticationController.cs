@@ -33,7 +33,9 @@ namespace UserAuthenticationMS.Controllers
                 string LastName = jsonResult["LastName"].ToString();
 
                 int userRole = Convert.ToInt32(jsonResult["RoleId"].ToString());
-                
+
+                int[] TeamIds = jsonResult["TeamIds"].ToObject<int[]>();
+
                 WebSecurity.CreateUserAndAccount(
                     Username, 
                     Membership.GeneratePassword(128, 30),
@@ -47,10 +49,18 @@ namespace UserAuthenticationMS.Controllers
 
                 CoachItEntities _db = new CoachItEntities();
                 string[] userRoles = _db.webpages_Roles.Where(x => x.RoleId == userRole).Select(z => z.RoleName).ToArray();
-                _db.Dispose();
 
                 Roles.AddUserToRoles(Username, userRoles);
-                
+
+                int newUserId = _db.webpages_Users.First(x => x.Username == Username).UserId;
+
+                foreach (int teamId in TeamIds)
+                {
+                    _db.TeamsUsers.Add(new TeamsUser() { TeamId = teamId, UserId = newUserId, Timestamp = DateTime.Now });
+                }
+                _db.SaveChanges();
+                _db.Dispose();
+
                 string body = System.IO.File.ReadAllText(System.Web.HttpContext.Current.Request.MapPath("~/Helpers/MailTemplates/NewUser.html"));
                 body = body.Replace("#NAME#", FullNames)
                         .Replace("#USERNAME#", Username)

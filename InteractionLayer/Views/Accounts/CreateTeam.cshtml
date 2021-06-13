@@ -1,4 +1,4 @@
-﻿@model InteractionLayer.Models.Accounts.Team
+﻿@model List<InteractionLayer.Models.Accounts.Team>
 
 @{
     ViewBag.Title = "CreateTeam";
@@ -24,6 +24,35 @@
         </div>
     </div>
 </form>
+<br />
+<h3>Current Teams</h3>
+<div id="existingTeams" class="row">
+    <div class="col-md-12">
+        <table style="width:100%">
+            <tr>
+                <th>Name</th>
+                <th>Created Date</th>
+                <th>Members</th>
+            </tr>
+            @foreach (var item in Model.OrderBy(z => z.TeamName))
+            {
+                <tr>
+                    <td>@item.TeamName</td>
+                    <td>@item.Timestamp</td>
+                    <td>
+                        <ul>
+                            @foreach (var member in item.TeamMembers.OrderBy(x => x.LastName))
+                            {
+                                <li>@member.FullNames @member.LastName</li>
+                            }
+                        </ul>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+
 
 <script>
     $("#CreateTeam").click(function (e) {

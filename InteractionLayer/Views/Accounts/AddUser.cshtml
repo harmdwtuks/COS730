@@ -123,6 +123,23 @@
     </div>
 </form>
 
+<br />
+<div id="userAdded" class="hidden">
+    <div class="row">
+        <div class="col-md-12">
+            This link can be used by the user to create their own password. An email with this link has also been sent ot the new user.
+            <br />
+            <input id="newUserPWLink" type="text" class="form-control" readonly>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <button type="reset" class="cancel btn btn-danger">Reset</button>
+        </div>
+    </div>
+</div>
+
+
 <script>
     $("#CreateNewUser").click(function (e) {
         e.preventDefault();
@@ -133,11 +150,23 @@
             datatype: "json",
             data: $("form[id=AddUser]").serialize(),
             success: function (data) {
-                alert(data.message);
+                if (data.status == "OK") {
+                    $("#AddUser").addClass("hidden");
+                    $("#userAdded").removeClass("hidden");
+                    $("#newUserPWLink").val(data.message);
+                }
+                else {
+                    alert(data.message);
+                }
             },
             error: function (err) {
                 alert(err.responseText);
             }
         });
+    });
+
+    $(".cancel").click(function (e) {
+        e.preventDefault();
+        location.reload();
     });
 </script>

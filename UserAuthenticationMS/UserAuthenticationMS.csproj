@@ -205,6 +205,7 @@
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\AuthorisationController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\TeamsController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -228,7 +229,15 @@
     <Compile Include="Models\InitializeSimpleMembership.cs" />
     <Compile Include="Models\Login.cs" />
     <Compile Include="Models\ResetPassword.cs" />
+    <Compile Include="Models\Team.cs">
+      <DependentUpon>CoachIt.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TeamsUser.cs">
+      <DependentUpon>CoachIt.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TeamViewModel.cs" />
     <Compile Include="Models\UsersContext.cs" />
+    <Compile Include="Models\UserViewModel.cs" />
     <Compile Include="Models\webpages_Membership.cs">
       <DependentUpon>CoachIt.tt</DependentUpon>
     </Compile>

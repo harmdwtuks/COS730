@@ -16,6 +16,7 @@ namespace InteractionLayer.Controllers
     {
         private static readonly string GetRolesEndpoint = ConfigurationManager.AppSettings["GetRolesEndpoint"];
         private static readonly string GetTeamsEndpoint = ConfigurationManager.AppSettings["GetTeamsEndpoint"];
+        private static readonly string CreateTeamEndpoint = ConfigurationManager.AppSettings["CreateTeamEndpoint"];
         private static readonly string CreateNewUserEndpoint = ConfigurationManager.AppSettings["CreateNewUserEndpoint"];
         private static readonly string SetPasswordEndpoint = ConfigurationManager.AppSettings["SetPasswordEndpoint"];
 
@@ -147,14 +148,14 @@ namespace InteractionLayer.Controllers
         {
             JObject jObj = QueryMicroService(GetTeamsEndpoint, "GET", "");
 
-            List<Team> categoryList = new List<Team>();
+            List<Team> teamList = new List<Team>();
 
             if (jObj["status"].ToString() == "OK")
             {
-                categoryList = JsonConvert.DeserializeObject<List<Team>>(jObj["result"].ToString().Replace("\\\"", "\""));
+                teamList = JsonConvert.DeserializeObject<List<Team>>(jObj["result"].ToString().Replace("\\\"", "\""));
             }
 
-            return categoryList;
+            return teamList;
         }
 
         [HttpGet]
@@ -162,7 +163,7 @@ namespace InteractionLayer.Controllers
         {
             User newUser = new User();
             newUser.Roles = GetRoles();
-            newUser.Teams = new List<Team>();
+            newUser.Teams = GetTeams();
 
             return View(newUser);
         }
@@ -176,29 +177,33 @@ namespace InteractionLayer.Controllers
             
             JObject jObj = QueryMicroService(CreateNewUserEndpoint, "POST", JsonConvert.SerializeObject(user), additionalHeaderKeys);
             
-            string message = "";
-            if (jObj["status"].ToString() == "OK")
-            {
-                message = "User Created!";
-            }
-            else
-            {
-                message = jObj["result"].ToString();
-            }
-
-            return Json(new { message }, JsonRequestBehavior.AllowGet);
+            return Json(new { status = jObj["status"].ToString(), message = jObj["result"].ToString() }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
         public ActionResult CreateTeam()
         {
-            return View(new Team());
+            List<Team> existingTeamsList = GetTeams();
+
+            return View(existingTeamsList);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
         public ActionResult CreateTeam(Team team)
         {
-            return View();
+            JObject jObj = QueryMicroService(CreateTeamEndpoint, "POST", JsonConvert.SerializeObject(team));
+
+            string message = "";
+            if (jObj["status"].ToString() == "OK")
+            {
+                return RedirectToAction("CreateTeam", "Accounts");
+            }
+            else
+            {
+                message = jObj["result"].ToString();
+            }
+            
+            return Json(new { message }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet, AllowAnonymous]

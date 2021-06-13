@@ -4,7 +4,25 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="CoachItModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="CoachItModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Teams">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TeamName" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Timestamp" Type="datetime" Nullable="false" />
+          <Property Name="CreatorId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TeamsUsers">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TeamId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="Timestamp" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="webpages_Membership">
           <Key>
             <PropertyRef Name="UserId" />
@@ -69,6 +87,42 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Teams_webpages_Users">
+          <End Role="webpages_Users" Type="Self.webpages_Users" Multiplicity="1" />
+          <End Role="Teams" Type="Self.Teams" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="webpages_Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Teams">
+              <PropertyRef Name="CreatorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TeamsUsers_Teams">
+          <End Role="Teams" Type="Self.Teams" Multiplicity="1" />
+          <End Role="TeamsUsers" Type="Self.TeamsUsers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Teams">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="TeamsUsers">
+              <PropertyRef Name="TeamId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TeamsUsers_webpages_Users">
+          <End Role="webpages_Users" Type="Self.webpages_Users" Multiplicity="1" />
+          <End Role="TeamsUsers" Type="Self.TeamsUsers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="webpages_Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="TeamsUsers">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="fk_UserId">
           <End Role="webpages_Users" Type="Self.webpages_Users" Multiplicity="1" />
           <End Role="webpages_UsersInRoles" Type="Self.webpages_UsersInRoles" Multiplicity="*" />
@@ -82,6 +136,8 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="CoachItModelStoreContainer">
+          <EntitySet Name="Teams" EntityType="Self.Teams" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TeamsUsers" EntityType="Self.TeamsUsers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="webpages_Membership" EntityType="Self.webpages_Membership" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="webpages_OAuthMembership" EntityType="Self.webpages_OAuthMembership" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="webpages_Roles" EntityType="Self.webpages_Roles" Schema="dbo" store:Type="Tables" />
@@ -91,13 +147,24 @@
             <End Role="webpages_Roles" EntitySet="webpages_Roles" />
             <End Role="webpages_UsersInRoles" EntitySet="webpages_UsersInRoles" />
           </AssociationSet>
+          <AssociationSet Name="FK_Teams_webpages_Users" Association="Self.FK_Teams_webpages_Users">
+            <End Role="webpages_Users" EntitySet="webpages_Users" />
+            <End Role="Teams" EntitySet="Teams" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TeamsUsers_Teams" Association="Self.FK_TeamsUsers_Teams">
+            <End Role="Teams" EntitySet="Teams" />
+            <End Role="TeamsUsers" EntitySet="TeamsUsers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TeamsUsers_webpages_Users" Association="Self.FK_TeamsUsers_webpages_Users">
+            <End Role="webpages_Users" EntitySet="webpages_Users" />
+            <End Role="TeamsUsers" EntitySet="TeamsUsers" />
+          </AssociationSet>
           <AssociationSet Name="fk_UserId" Association="Self.fk_UserId">
             <End Role="webpages_Users" EntitySet="webpages_Users" />
             <End Role="webpages_UsersInRoles" EntitySet="webpages_UsersInRoles" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="CoachItModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -146,6 +213,8 @@
           <Property Name="ContactNumber" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="TelegramUserId" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="webpages_Roles" Relationship="Self.webpages_UsersInRoles" FromRole="webpages_Users" ToRole="webpages_Roles" />
+          <NavigationProperty Name="Teams" Relationship="CoachItModel.FK_Teams_webpages_Users" FromRole="webpages_Users" ToRole="Team" />
+          <NavigationProperty Name="TeamsUsers" Relationship="CoachItModel.FK_TeamsUsers_webpages_Users" FromRole="webpages_Users" ToRole="TeamsUser" />
         </EntityType>
         <Association Name="webpages_UsersInRoles">
           <End Role="webpages_Roles" Type="Self.webpages_Roles" Multiplicity="*" />
@@ -160,7 +229,79 @@
             <End Role="webpages_Roles" EntitySet="webpages_Roles" />
             <End Role="webpages_Users" EntitySet="webpages_Users" />
           </AssociationSet>
+          <EntitySet Name="Teams" EntityType="CoachItModel.Team" />
+          <EntitySet Name="TeamsUsers" EntityType="CoachItModel.TeamsUser" />
+          <AssociationSet Name="FK_Teams_webpages_Users" Association="CoachItModel.FK_Teams_webpages_Users">
+            <End Role="webpages_Users" EntitySet="webpages_Users" />
+            <End Role="Team" EntitySet="Teams" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TeamsUsers_Teams" Association="CoachItModel.FK_TeamsUsers_Teams">
+            <End Role="Team" EntitySet="Teams" />
+            <End Role="TeamsUser" EntitySet="TeamsUsers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TeamsUsers_webpages_Users" Association="CoachItModel.FK_TeamsUsers_webpages_Users">
+            <End Role="webpages_Users" EntitySet="webpages_Users" />
+            <End Role="TeamsUser" EntitySet="TeamsUsers" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="Team">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TeamName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatorId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="webpages_Users" Relationship="CoachItModel.FK_Teams_webpages_Users" FromRole="Team" ToRole="webpages_Users" />
+          <NavigationProperty Name="TeamsUsers" Relationship="CoachItModel.FK_TeamsUsers_Teams" FromRole="Team" ToRole="TeamsUser" />
+        </EntityType>
+        <EntityType Name="TeamsUser">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TeamId" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Team" Relationship="CoachItModel.FK_TeamsUsers_Teams" FromRole="TeamsUser" ToRole="Team" />
+          <NavigationProperty Name="webpages_Users" Relationship="CoachItModel.FK_TeamsUsers_webpages_Users" FromRole="TeamsUser" ToRole="webpages_Users" />
+        </EntityType>
+        <Association Name="FK_Teams_webpages_Users">
+          <End Type="CoachItModel.webpages_Users" Role="webpages_Users" Multiplicity="1" />
+          <End Type="CoachItModel.Team" Role="Team" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="webpages_Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Team">
+              <PropertyRef Name="CreatorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TeamsUsers_Teams">
+          <End Type="CoachItModel.Team" Role="Team" Multiplicity="1" />
+          <End Type="CoachItModel.TeamsUser" Role="TeamsUser" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Team">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="TeamsUser">
+              <PropertyRef Name="TeamId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TeamsUsers_webpages_Users">
+          <End Type="CoachItModel.webpages_Users" Role="webpages_Users" Multiplicity="1" />
+          <End Type="CoachItModel.TeamsUser" Role="TeamsUser" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="webpages_Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="TeamsUser">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -222,6 +363,26 @@
               <ScalarProperty Name="UserId" ColumnName="UserId" />
             </EndProperty>
           </AssociationSetMapping>
+          <EntitySetMapping Name="Teams">
+            <EntityTypeMapping TypeName="CoachItModel.Team">
+              <MappingFragment StoreEntitySet="Teams">
+                <ScalarProperty Name="CreatorId" ColumnName="CreatorId" />
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+                <ScalarProperty Name="TeamName" ColumnName="TeamName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TeamsUsers">
+            <EntityTypeMapping TypeName="CoachItModel.TeamsUser">
+              <MappingFragment StoreEntitySet="TeamsUsers">
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="TeamId" ColumnName="TeamId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
