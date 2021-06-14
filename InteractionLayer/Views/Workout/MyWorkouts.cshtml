@@ -1,0 +1,56 @@
+﻿@model List<List<InteractionLayer.Models.Workout.WorkoutViewModel>>
+
+@{
+    ViewBag.Title = "MyWorkouts";
+}
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<h2>My Workouts</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        @foreach (var submodel in Model)
+        {
+            <div class="row">
+                @foreach (var item in submodel)
+                {
+                    <div class="col-md-3">
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row space-16">&nbsp;</div>
+                                <div class="thumbnail">
+                                    <div class="caption text-center">
+                                        <div class="position-relative">
+                                            <h4>@item.WorkoutTitle</h4>
+                                        </div>
+                                        <h5 id="thumbnail-label">@item.EstimatedDuration</h5>
+                                        <div class="thumbnail-description smaller divoverflow">
+                                            <ul class="list-group list-group-flush">
+                                                @foreach (var subitem in item.Exercises)
+                                                {
+                                                    <li class="list-group-item">
+                                                        <div style="overflow: hidden;">
+                                                            <p style="float: left !important;">@subitem.ExerciseName</p>
+                                                            <p style="float: right;">@subitem.Sets/@subitem.Repititions</p>
+                                                        </div>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="caption card-footer text-center">
+                                        <a href="@(Url.Action("DoWorkout", "Workout"))?WorkoutId=@item.WorkoutId" class="btn btn-info">Lets Go!</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+

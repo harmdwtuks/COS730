@@ -20,6 +20,7 @@ namespace InteractionLayer.Controllers
         private static readonly string CreateWorkoutCategoryEndpoint = ConfigurationManager.AppSettings["CreateWorkoutCategoryEndpoint"];
         private static readonly string CreateWorkoutExerciseEndpoint = ConfigurationManager.AppSettings["CreateWorkoutExerciseEndpoint"];
         private static readonly string CreateWorkoutEndpoint = ConfigurationManager.AppSettings["CreateWorkoutEndpoint"];
+        private static readonly string GetUserWorkoutsEndpoint = ConfigurationManager.AppSettings["GetUserWorkoutsEndpoint"];
 
         /// <summary>
         /// Generic API call funtion.
@@ -156,6 +157,24 @@ namespace InteractionLayer.Controllers
             return exercisesList;
         }
 
+        private List<WorkoutViewModel> GetWorkoutsForUser(int UserId = 0)
+        {
+            string JsonQuery = "{" +
+                                "\"UserId\":\"" + UserId.ToString() + "\"" +
+                               "}";
+
+            JObject jObj = QueryMicroService(GetUserWorkoutsEndpoint, "POST", JsonQuery);
+
+            List<WorkoutViewModel> model = new List<WorkoutViewModel>();
+
+            if (jObj["status"].ToString() == "OK")
+            {
+                model = JsonConvert.DeserializeObject<List<WorkoutViewModel>>(jObj["result"].ToString().Replace("\\\"", "\""));
+            }
+            
+            return model;
+        }
+
         [HttpGet]
         public ActionResult ManageExercises()
         {
@@ -266,6 +285,33 @@ namespace InteractionLayer.Controllers
             }
 
             return Json(new { message }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult MyWorkouts()
+        {
+            List<WorkoutViewModel> workouts = GetWorkoutsForUser(1);
+
+            List<List<WorkoutViewModel>> model = new List<List<WorkoutViewModel>>();
+
+            while (workouts.Count > 4)
+            {
+                model.Add(workouts.Take(4).ToList());
+
+                workouts.RemoveRange(0, 4);
+            }
+
+            model.Add(workouts);
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult DoWorkout(int WorkoutId)
+        {
+            WorkoutViewModel model = GetWorkoutsForUser(1).FirstOrDefault(x => x.WorkoutId == WorkoutId);
+
+            return View(model);
         }
     }
 }

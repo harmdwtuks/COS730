@@ -176,9 +176,62 @@ namespace DatabaseLayer.Controllers
             return Ok(jObjReturn);
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("Workouts")]
-        public IHttpActionResult Workouts()
+        public IHttpActionResult Workouts([FromBody] JObject jsonResult)
+        {
+            dynamic jObjReturn = new JObject();
+
+            try
+            {
+                int userId = Convert.ToInt32(jsonResult["UserId"].ToString());
+
+                CoachItEntities _db = new CoachItEntities();
+
+                List<DetailsViewModel> modelList = new List<DetailsViewModel>();
+
+                foreach (WorkoutUser wu in _db.WorkoutUsers.Where(x => x.UserId == userId))
+                {
+                    DetailsViewModel model = new DetailsViewModel()
+                    {
+                        WorkoutId = wu.Id,
+                        WorkoutTitle = wu.Workout,
+                        EstimatedDuration = wu.Duration
+                    };
+
+                    model.Exercises = (from s in _db.WorkoutExercisesLInks
+                                       where s.WorkoutUsersId == wu.Id
+                                       select new Exercise
+                                       {
+                                           Id = s.Id,
+                                           ExerciseId = s.ExerciseId,
+                                           ExerciseName = s.WorkoutExercis.Exercise,
+                                           Sets = s.Sets,
+                                           Repititions = s.Repititions,
+                                           Duration = s.Duration,
+                                           Weight = s.Weight
+                                       }).ToList();
+
+                    modelList.Add(model);
+                }
+               
+                jObjReturn.status = "OK";
+                jObjReturn.result = JsonConvert.SerializeObject(modelList);
+
+                _db.Dispose();
+            }
+            catch (Exception exception)
+            {
+                jObjReturn.status = "FAILED";
+                jObjReturn.result = $"Could not get workouts.\n{exception.Message}";
+            }
+
+            return Ok(jObjReturn);
+        }
+
+        [HttpGet]
+        [Route("AllWorkouts")]
+        public IHttpActionResult AllWorkouts()
         {
             dynamic jObjReturn = new JObject();
 
@@ -204,6 +257,7 @@ namespace DatabaseLayer.Controllers
                                        {
                                            Id = s.Id,
                                            ExerciseId = s.ExerciseId,
+                                           ExerciseName = s.WorkoutExercis.Exercise,
                                            Sets = s.Sets,
                                            Repititions = s.Repititions,
                                            Duration = s.Duration,
@@ -213,8 +267,8 @@ namespace DatabaseLayer.Controllers
 
                     modelList.Add(model);
                 }
-               
-                
+
+
 
                 jObjReturn.status = "OK";
                 jObjReturn.result = JsonConvert.SerializeObject(modelList);
@@ -229,7 +283,7 @@ namespace DatabaseLayer.Controllers
 
             return Ok(jObjReturn);
         }
-
+        
         [HttpPost]
         [Route("NewWorkout")]
         public IHttpActionResult NewWorkout([FromBody] JObject jsonResult)

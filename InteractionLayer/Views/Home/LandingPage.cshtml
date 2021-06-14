@@ -1,0 +1,101 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>LandingPage</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="stylesheet" runat="server" media="screen" href="~/Content/Site.css" />
+
+</head>
+<body>
+    <div class="container body-content">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card cardmenu thumbnail">
+                    <div class="card-body">
+                        <h5 class="card-title">Log Metric</h5>
+                        <p class="card-text">Record measurements.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="@(Url.Action("RecordMetric", "Metrics"))" class="btn btn-secondary bottom">Log Metric</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card cardmenu thumbnail">
+                    <div class="card-body">
+                        <h5 class="card-title">Metric Progress</h5>
+                        <p class="card-text">Take a look at some grapghs about your progress.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="@(Url.Action("", ""))" class="btn btn-secondary">Metric Progress</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card cardmenu thumbnail">
+                    <div class="card-body">
+                        <h5 class="card-title">My Workouts</h5>
+                        <p class="card-text">View and complete a workout, update exercises and mark them as complete.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="@(Url.Action("MyWorkouts", "Workout"))" class="btn btn-secondary">My Workouts</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card cardmenu thumbnail">
+                    <div class="card-body">
+                        <h5 class="card-title">Create Workout</h5>
+                        <p class="card-text">Create a new workout that you and your coach can see.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="@(Url.Action("CreateWorkout", "Workout"))" class="btn btn-secondary">Create Workout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card cardmenu thumbnail">
+                    <div class="card-body">
+                        <h5 class="card-title">Workout Progress</h5>
+                        <p class="card-text">Take a look at you performace chart.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="@(Url.Action("", ""))" class="btn btn-secondary">Workout Progress</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card cardmenu thumbnail">
+                    <div class="card-body">
+                        <h5 class="card-title">Messages</h5>
+                        <p class="card-text">Get in touch with your team and see what they're up to.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="@(Url.Action("", ""))" class="btn btn-secondary">Metric Progress</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - <i>CoachIt</i></p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -123,7 +123,7 @@ namespace InteractionLayer.Controllers
         {
             if (LogIn(login) == "Logged In")
             {
-                return RedirectToAction("RecordMetric", "Metrics");
+                return RedirectToAction("LandingPage", "Home");
             }
 
             return RedirectToAction("Index");
@@ -161,6 +161,12 @@ namespace InteractionLayer.Controllers
         {
             ViewBag.Message = "Your contact page.";
 
+            return View();
+        }
+
+        [HttpGet, AllowAnonymous]
+        public ActionResult LandingPage()
+        {
             return View();
         }
     }

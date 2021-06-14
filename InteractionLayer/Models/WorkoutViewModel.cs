@@ -7,6 +7,7 @@ namespace InteractionLayer.Models.Workout
 {
     public class WorkoutViewModel
     {
+        public int WorkoutId { get; set; }
         public string WorkoutTitle { get; set; }
         public TimeSpan EstimatedDuration { get; set; }
 

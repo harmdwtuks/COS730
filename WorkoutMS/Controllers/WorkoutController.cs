@@ -18,6 +18,7 @@ namespace WorkoutMS.Controllers
     {
         private static readonly string GetWorkoutCategoriesEndpoint = ConfigurationManager.AppSettings["GetWorkoutCategoriesEndpoint"];
         private static readonly string GetWorkoutExercisesEndpoint = ConfigurationManager.AppSettings["GetWorkoutExercisesEndpoint"];
+        private static readonly string GetAllWorkoutsEndpoint = ConfigurationManager.AppSettings["GetAllWorkoutsEndpoint"];
         private static readonly string GetWorkoutsEndpoint = ConfigurationManager.AppSettings["GetWorkoutsEndpoint"];
         private static readonly string CreateWorkoutCategoryEndpoint = ConfigurationManager.AppSettings["CreateWorkoutCategoryEndpoint"];
         private static readonly string CreateWorkoutExerciseEndpoint = ConfigurationManager.AppSettings["CreateWorkoutExerciseEndpoint"];
@@ -129,15 +130,31 @@ namespace WorkoutMS.Controllers
             return records;
         }
 
-        private List<WorkoutDetails> GetWorkouts()
+        private List<WorkoutDetails> GetWorkouts(int userId = 0)
         {
-            JObject jObj = CallAPI(GetWorkoutsEndpoint, "GET", "");
-
             List<WorkoutDetails> records = new List<WorkoutDetails>();
 
-            if (jObj["status"].ToString() == "OK")
+            if (userId == 0)
             {
-                records = JsonConvert.DeserializeObject<List<WorkoutDetails>>(jObj["result"].ToString().Replace("\\\"", "\""));
+                JObject jObj = CallAPI(GetAllWorkoutsEndpoint, "GET", "");
+
+                if (jObj["status"].ToString() == "OK")
+                {
+                    records = JsonConvert.DeserializeObject<List<WorkoutDetails>>(jObj["result"].ToString().Replace("\\\"", "\""));
+                }
+            }
+            else
+            {
+                string JsonQuery = "{" +
+                                "\"UserId\":\"" + userId.ToString() + "\"" +
+                               "}";
+
+                JObject jObj = CallAPI(GetWorkoutsEndpoint, "POST", JsonQuery);
+
+                if (jObj["status"].ToString() == "OK")
+                {
+                    records = JsonConvert.DeserializeObject<List<WorkoutDetails>>(jObj["result"].ToString().Replace("\\\"", "\""));
+                }
             }
 
             return records;
@@ -300,6 +317,23 @@ namespace WorkoutMS.Controllers
             }
 
             return Ok(jObjReturn);
+        }
+
+        [HttpPost]
+        [Route("GetWorkouts")]
+        public IHttpActionResult GetWorkouts([FromBody] JObject jsonResult)
+        {
+            int userId = Convert.ToInt32(jsonResult["UserId"].ToString().Trim());
+
+            dynamic jObj = new JObject();
+
+            // Get the records.
+            List<WorkoutDetails> model = GetWorkouts(userId);
+
+            jObj.status = "OK";
+            jObj.result = JsonConvert.SerializeObject(model);
+
+            return Ok(jObj);
         }
     }
 }

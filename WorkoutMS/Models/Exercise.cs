@@ -9,6 +9,7 @@ namespace WorkoutMS.Models
     {
         public int WorkoutCategoryId { get; set; }
         public int ExerciseId { get; set; }
+        public string ExerciseName { get; set; }
         public int Sets { get; set; }
         public int Repititions { get; set; }
         public double Weight { get; set; }

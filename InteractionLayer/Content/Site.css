@@ -22,3 +22,48 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.cardmenu {
+    min-height: 12rem;
+    margin: 1.5%;
+}
+
+.thumbnail {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5);
+    transition: 0.3s;
+    min-width: 40%;
+    border-radius: 5px;
+}
+
+.thumbnail-description {
+    min-height: 40px;
+}
+
+.thumbnail:hover {
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 1);
+}
+
+.divoverflow {
+    height: 200px;
+    overflow-y: scroll;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
