@@ -19,6 +19,7 @@ namespace InteractionLayer.Controllers
         private static readonly string CreateTeamEndpoint = ConfigurationManager.AppSettings["CreateTeamEndpoint"];
         private static readonly string CreateNewUserEndpoint = ConfigurationManager.AppSettings["CreateNewUserEndpoint"];
         private static readonly string SetPasswordEndpoint = ConfigurationManager.AppSettings["SetPasswordEndpoint"];
+        private static readonly string ForgotPasswordEndpoint = ConfigurationManager.AppSettings["ForgotPasswordEndpoint"];
 
         /// <summary>
         /// Generic API call funtion.
@@ -233,6 +234,38 @@ namespace InteractionLayer.Controllers
             }
 
             //return View(); // redirect to login page
+            return Json(jObj, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet, AllowAnonymous]
+        public ActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost, AllowAnonymous]
+        public ActionResult ForgotPassword(string EmailAddress)
+        {
+            string JsonQuery = "{" +
+                                "\"EmailAddress\":\"" + EmailAddress + "\"" +
+                               "}";
+
+            List<KeyValuePair<string, string>> additionalHeaderKeys = new List<KeyValuePair<string, string>>();
+            additionalHeaderKeys.Add(new KeyValuePair<string, string>("SetPasswordURI", string.Format("{0}://{1}{2}Accounts/SetPassword", Request.Url.Scheme, Request.Url.Authority, Url.Content("~"))));
+            additionalHeaderKeys.Add(new KeyValuePair<string, string>("ForgotPasswordURI", string.Format("{0}://{1}{2}Accounts/ForgotPassword", Request.Url.Scheme, Request.Url.Authority, Url.Content("~"))));
+
+            JObject jObj = QueryMicroService(SetPasswordEndpoint, "POST", JsonQuery, additionalHeaderKeys);
+
+            string message = "";
+            if (jObj["status"].ToString() == "OK")
+            {
+                message = "If your account exists, an email with a password reset link has been sent to you. Please note that the reset link is time sensitive.";
+            }
+            else
+            {
+                message = jObj["result"].ToString();
+            }
+
             return Json(jObj, JsonRequestBehavior.AllowGet);
         }
     }

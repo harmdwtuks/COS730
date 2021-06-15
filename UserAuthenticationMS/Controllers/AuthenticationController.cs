@@ -176,6 +176,40 @@ namespace UserAuthenticationMS.Controllers
                     return BadRequest("Email Not Found");
                 }
 
+                //string body = System.IO.File.ReadAllText(System.Web.HttpContext.Current.Request.MapPath("~/Helpers/MailTemplates/NewUser.html"));
+                //body = body.Replace("#NAME#", FullNames)
+                //        .Replace("#USERNAME#", Username)
+                //        .Replace("#EXPIRATIONDATE#", DateTime.Now.AddHours(2).ToString("yyyy/MM/dd hh:mm tt"));
+
+                //var re = Request;
+                //var headers = re.Headers;
+
+                //if (headers.Contains("SetPasswordURI"))
+                //{
+                //    string setPasswordURI = $"{headers.GetValues("SetPasswordURI").First()}?Key={WebSecurity.GeneratePasswordResetToken(Username, 120)}";
+                //    body = body.Replace("#LINK#", setPasswordURI);
+
+                //    jObj.result = setPasswordURI;
+                //}
+
+                //if (headers.Contains("ForgotPasswordURI"))
+                //{
+                //    string setPasswordURI = headers.GetValues("ForgotPasswordURI").First();
+                //    body = body.Replace("#FORGOTPASSWORDLINK#", $"{setPasswordURI}");
+                //}
+
+                //Mail.Send(EmailAddress, "CoachIt - Registration", body);
+
+
+
+
+
+
+
+
+
+
+
                 resetPasswordLink = $"{Request.RequestUri.GetLeftPart(UriPartial.Authority)}/api/authentication/SetPassword?Key={WebSecurity.GeneratePasswordResetToken(user.Username, 120)}";  
             }
 
