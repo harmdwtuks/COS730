@@ -164,57 +164,55 @@ namespace UserAuthenticationMS.Controllers
         [Route("ForgotPassword")]
         public IHttpActionResult ForgotPassword([FromBody] JObject jsonResult)
         {
-            string EmailAddress = jsonResult["EmailAddress"].ToString();
+            dynamic jObj = new JObject();
 
-            string resetPasswordLink = "";
-
-            using (CoachItEntities db = new CoachItEntities())
+            try
             {
-                webpages_Users user = db.webpages_Users.FirstOrDefault(x => x.EmailAddress == EmailAddress);
+                string EmailAddress = jsonResult["Email"].ToString();
                 
-                if (user == null)
+                using (CoachItEntities db = new CoachItEntities())
                 {
-                    return BadRequest("Email Not Found");
+                    webpages_Users user = db.webpages_Users.FirstOrDefault(x => x.EmailAddress == EmailAddress);
+
+                    if (user == null)
+                    {
+                        return BadRequest("Email Not Found");
+                    }
+
+                    string body = System.IO.File.ReadAllText(System.Web.HttpContext.Current.Request.MapPath("~/Helpers/MailTemplates/NewUser.html"));
+                    body = body.Replace("#NAME#", user.FirstName)
+                            .Replace("#USERNAME#", user.Username)
+                            .Replace("#EXPIRATIONDATE#", DateTime.Now.AddHours(2).ToString("yyyy/MM/dd hh:mm tt"));
+
+                    var re = Request;
+                    var headers = re.Headers;
+
+                    if (headers.Contains("SetPasswordURI"))
+                    {
+                        string setPasswordURI = $"{headers.GetValues("SetPasswordURI").First()}?Key={WebSecurity.GeneratePasswordResetToken(user.Username, 120)}";
+                        body = body.Replace("#LINK#", setPasswordURI);
+
+                        jObj.result = setPasswordURI;
+                    }
+
+                    if (headers.Contains("ForgotPasswordURI"))
+                    {
+                        string setPasswordURI = headers.GetValues("ForgotPasswordURI").First();
+                        body = body.Replace("#FORGOTPASSWORDLINK#", $"{setPasswordURI}");
+                    }
+
+                    Mail.Send(EmailAddress, "CoachIt - Registration", body);
+
+                    jObj.status = "OK";
                 }
-
-                //string body = System.IO.File.ReadAllText(System.Web.HttpContext.Current.Request.MapPath("~/Helpers/MailTemplates/NewUser.html"));
-                //body = body.Replace("#NAME#", FullNames)
-                //        .Replace("#USERNAME#", Username)
-                //        .Replace("#EXPIRATIONDATE#", DateTime.Now.AddHours(2).ToString("yyyy/MM/dd hh:mm tt"));
-
-                //var re = Request;
-                //var headers = re.Headers;
-
-                //if (headers.Contains("SetPasswordURI"))
-                //{
-                //    string setPasswordURI = $"{headers.GetValues("SetPasswordURI").First()}?Key={WebSecurity.GeneratePasswordResetToken(Username, 120)}";
-                //    body = body.Replace("#LINK#", setPasswordURI);
-
-                //    jObj.result = setPasswordURI;
-                //}
-
-                //if (headers.Contains("ForgotPasswordURI"))
-                //{
-                //    string setPasswordURI = headers.GetValues("ForgotPasswordURI").First();
-                //    body = body.Replace("#FORGOTPASSWORDLINK#", $"{setPasswordURI}");
-                //}
-
-                //Mail.Send(EmailAddress, "CoachIt - Registration", body);
-
-
-
-
-
-
-
-
-
-
-
-                resetPasswordLink = $"{Request.RequestUri.GetLeftPart(UriPartial.Authority)}/api/authentication/SetPassword?Key={WebSecurity.GeneratePasswordResetToken(user.Username, 120)}";  
+            }
+            catch (Exception ex)
+            {
+                jObj.status = "FAILED";
+                jObj.result = ex.Message;
             }
 
-            return Ok(resetPasswordLink);
+            return Ok(jObj);
         }
 
         [AllowAnonymous]
@@ -301,10 +299,10 @@ namespace UserAuthenticationMS.Controllers
                          {
                              s.UserId,
                              s.Username,
-                             s.FirstName,
-                             s.Surname,
+                             FullNames = s.FirstName,
+                             LastName = s.Surname,
                              s.EmailAddress,
-                             s.ContactNumber
+                             TelephoneNumber =s.ContactNumber
                          }).ToList();
 
                 _db.Dispose();

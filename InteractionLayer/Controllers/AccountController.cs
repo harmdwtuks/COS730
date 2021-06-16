@@ -22,7 +22,12 @@ namespace InteractionLayer.Controllers
     [Authorize]
     public class AccountController : Controller
     {
+        private static readonly string GetRolesEndpoint = ConfigurationManager.AppSettings["GetRolesEndpoint"];
+        private static readonly string GetTeamsEndpoint = ConfigurationManager.AppSettings["GetTeamsEndpoint"];
         private static readonly string GetUsersEndpoint = ConfigurationManager.AppSettings["GetUsersEndpoint"];
+        private static readonly string SetPasswordEndpoint = ConfigurationManager.AppSettings["SetPasswordEndpoint"];
+        private static readonly string ForgotPasswordEndpoint = ConfigurationManager.AppSettings["ForgotPasswordEndpoint"];
+        private static readonly string CreateNewUserEndpoint = ConfigurationManager.AppSettings["CreateNewUserEndpoint"];
 
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
@@ -70,7 +75,7 @@ namespace InteractionLayer.Controllers
         /// <param name="requestMethod">HTTP Method (GET/POST/OTHER)</param>
         /// <param name="jsonQuery">JSON to be sent with the API call</param>
         /// <returns>JSON tuple containing the call status and the result</returns>
-        private JObject QueryMicroService(string endPoint, string requestMethod = "GET", string jsonQuery = "")
+        private JObject QueryMicroService(string endPoint, string requestMethod = "GET", string jsonQuery = "", List<KeyValuePair<string, string>> additionalHeaderKeys = null)
         {
             // API call
             System.Net.HttpWebRequest request = WebRequest.Create(endPoint) as HttpWebRequest;
@@ -80,6 +85,14 @@ namespace InteractionLayer.Controllers
             if (Session["BearerToken"] != null)
             {
                 request.Headers.Add("Authorization", "Bearer " + Session["BearerToken"].ToString());
+            }
+
+            if (additionalHeaderKeys != null)
+            {
+                foreach (KeyValuePair<string, string> pair in additionalHeaderKeys)
+                {
+                    request.Headers.Add(pair.Key, pair.Value);
+                }
             }
 
             if (!String.IsNullOrWhiteSpace(jsonQuery))
@@ -158,8 +171,7 @@ namespace InteractionLayer.Controllers
                 return jObj;
             }
         }
-
-
+        
         //
         // GET: /Account/Login
         [AllowAnonymous]
@@ -312,13 +324,22 @@ namespace InteractionLayer.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await UserManager.FindByNameAsync(model.Email);
-                if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
-                {
-                    // Don't reveal that the user does not exist or is not confirmed
-                    return View("ForgotPasswordConfirmation");
-                }
+                List<KeyValuePair<string, string>> additionalHeaderKeys = new List<KeyValuePair<string, string>>();
+                additionalHeaderKeys.Add(new KeyValuePair<string, string>("SetPasswordURI", string.Format("{0}://{1}{2}Account/SetPassword", Request.Url.Scheme, Request.Url.Authority, Url.Content("~"))));
+                additionalHeaderKeys.Add(new KeyValuePair<string, string>("ForgotPasswordURI", string.Format("{0}://{1}{2}Account/ForgotPassword", Request.Url.Scheme, Request.Url.Authority, Url.Content("~"))));
+                
+                JObject jObj = QueryMicroService(ForgotPasswordEndpoint, "POST", JsonConvert.SerializeObject(model), additionalHeaderKeys);
 
+                string message = "";
+                if (jObj["status"].ToString() == "OK")
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+                else
+                {
+                    message = jObj["result"].ToString();
+                }
+                
                 // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                 // Send an email with this link
                 // string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
@@ -339,42 +360,43 @@ namespace InteractionLayer.Controllers
             return View();
         }
 
-        //
-        // GET: /Account/ResetPassword
-        [AllowAnonymous]
-        public ActionResult ResetPassword(string code)
-        {
-            return code == null ? View("Error") : View();
-        }
+        ////
+        //// GET: /Account/ResetPassword
+        //[AllowAnonymous]
+        //public ActionResult ResetPassword(string code)
+        //{
+        //    return code == null ? View("Error") : View();
+        //}
 
-        //
-        // POST: /Account/ResetPassword
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> ResetPassword(ResetPasswordViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-            var user = await UserManager.FindByNameAsync(model.Email);
-            if (user == null)
-            {
-                // Don't reveal that the user does not exist
-                return RedirectToAction("ResetPasswordConfirmation", "Account");
-            }
-            var result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
-            if (result.Succeeded)
-            {
-                return RedirectToAction("ResetPasswordConfirmation", "Account");
-            }
-            AddErrors(result);
-            return View();
-        }
+        ////
+        //// POST: /Account/ResetPassword
+        //[HttpPost]
+        //[AllowAnonymous]
+        //[ValidateAntiForgeryToken]
+        //public async Task<ActionResult> ResetPassword(ResetPasswordViewModel model)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return View(model);
+        //    }
+        //    var user = await UserManager.FindByNameAsync(model.Email);
+        //    if (user == null)
+        //    {
+        //        // Don't reveal that the user does not exist
+        //        return RedirectToAction("ResetPasswordConfirmation", "Account");
+        //    }
+        //    var result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
+        //    if (result.Succeeded)
+        //    {
+        //        return RedirectToAction("ResetPasswordConfirmation", "Account");
+        //    }
+        //    AddErrors(result);
+        //    return View();
+        //}
 
         //
         // GET: /Account/ResetPasswordConfirmation
+
         [AllowAnonymous]
         public ActionResult ResetPasswordConfirmation()
         {
@@ -545,6 +567,91 @@ namespace InteractionLayer.Controllers
             ViewBag.ClientName = Session["ClientName"].ToString();
             
             return Json(new { status = "OK" }, JsonRequestBehavior.AllowGet);
+        }
+
+        private List<Role> GetRoles()
+        {
+            JObject jObj = QueryMicroService(GetRolesEndpoint, "GET", "");
+
+            List<Role> categoryList = new List<Role>();
+
+            if (jObj["status"].ToString() == "OK")
+            {
+                categoryList = JsonConvert.DeserializeObject<List<Role>>(jObj["result"].ToString().Replace("\\\"", "\""));
+            }
+
+            return categoryList;
+        }
+
+        private List<Team> GetTeams()
+        {
+            JObject jObj = QueryMicroService(GetTeamsEndpoint, "GET", "");
+
+            List<Team> teamList = new List<Team>();
+
+            if (jObj["status"].ToString() == "OK")
+            {
+                teamList = JsonConvert.DeserializeObject<List<Team>>(jObj["result"].ToString().Replace("\\\"", "\""));
+            }
+
+            return teamList;
+        }
+
+        [HttpGet]
+        public ActionResult AddUser()
+        {
+            UserViewModel newUser = new UserViewModel();
+            newUser.Roles = GetRoles();
+            newUser.Teams = GetTeams();
+
+            return View(newUser);
+        }
+
+        [HttpPost]
+        public ActionResult AddUser(UserViewModel user)
+        {
+            List<KeyValuePair<string, string>> additionalHeaderKeys = new List<KeyValuePair<string, string>>();
+            additionalHeaderKeys.Add(new KeyValuePair<string, string>("SetPasswordURI", string.Format("{0}://{1}{2}Account/SetPassword", Request.Url.Scheme, Request.Url.Authority, Url.Content("~"))));
+            additionalHeaderKeys.Add(new KeyValuePair<string, string>("ForgotPasswordURI", string.Format("{0}://{1}{2}Account/ForgotPassword", Request.Url.Scheme, Request.Url.Authority, Url.Content("~"))));
+
+            JObject jObj = QueryMicroService(CreateNewUserEndpoint, "POST", JsonConvert.SerializeObject(user), additionalHeaderKeys);
+
+            return Json(new { status = jObj["status"].ToString(), message = jObj["result"].ToString() }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet, AllowAnonymous]
+        public ActionResult SetPassword(string key)
+        {
+            ResetPassword model = new ResetPassword()
+            {
+                Key = key
+            };
+
+            return View(model);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken, AllowAnonymous]
+        public ActionResult SetPassword(ResetPassword model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { message = "Your password does not conform to the required format or does not match." }, JsonRequestBehavior.AllowGet);
+            }
+            
+            JObject jObj = QueryMicroService(SetPasswordEndpoint, "POST", JsonConvert.SerializeObject(model));
+
+            string message = "";
+            if (jObj["status"].ToString() == "OK")
+            {
+                message = "Password Set Successfully!";
+            }
+            else
+            {
+                message = jObj["result"].ToString();
+            }
+
+            //return View(); // redirect to login page
+            return Json(new { message }, JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)

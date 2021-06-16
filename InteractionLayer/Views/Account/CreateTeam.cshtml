@@ -1,0 +1,74 @@
+﻿@model List<InteractionLayer.Models.Accounts.Team>
+
+@{
+    ViewBag.Title = "CreateTeam";
+}
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<h2>Create Team</h2>
+
+<form id="NewTeam">
+    @Html.AntiForgeryToken()
+    <div class="row">
+        <div class="col-md-12">
+            <label>Team Name</label>
+            <br />
+            <input id="TeamName" name="TeamName" class="form-control" placeholder="Enter Team Name">
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+            <button id="CreateTeam" type="submit" class="btn btn-success">Create Team</button>
+        </div>
+    </div>
+</form>
+<br />
+<h3>Current Teams</h3>
+<div id="existingTeams" class="row">
+    <div class="col-md-12">
+        <table style="width:100%">
+            <tr>
+                <th>Name</th>
+                <th>Created Date</th>
+                <th>Members</th>
+            </tr>
+            @foreach (var item in Model.OrderBy(z => z.TeamName))
+            {
+                <tr>
+                    <td>@item.TeamName</td>
+                    <td>@item.Timestamp</td>
+                    <td>
+                        <ul>
+                            @foreach (var member in item.TeamMembers.OrderBy(x => x.LastName))
+                            {
+                                <li>@member.FullNames @member.LastName</li>
+                            }
+                        </ul>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+
+
+<script>
+    $("#CreateTeam").click(function (e) {
+        e.preventDefault();
+
+        $.ajax({
+            type: "POST",
+            url: "/Accounts/CreateTeam",
+            datatype: "json",
+            data: $("form[id=NewTeam]").serialize(),
+            success: function (data) {
+                alert(data.message);
+            },
+            error: function (err) {
+                alert(err.responseText);
+            }
+        });
+    });
+</script>
