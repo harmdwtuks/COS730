@@ -12,90 +12,275 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
     <link rel="stylesheet" runat="server" media="screen" href="~/Content/Site.css" />
-
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
 </head>
 <body>
     <div class="container body-content">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="card cardmenu thumbnail">
-                    <div class="card-body">
-                        <h5 class="card-title">Log Metric</h5>
-                        <p class="card-text">Record measurements.</p>
+
+        @if (User.IsInRole("System Administrator") || User.IsInRole("Coach"))
+        {
+            <div class="row">
+                <div class="col-md-12">
+                    @if (ViewBag.ClientName == null)
+                    {
+                        <span id="CurrentUser" class="label label-default">No Client Selected</span>
+                        <button id="SelectUser" class="btn btn-success">Select Client</button>
+                    }
+                    else
+                    {
+                        <span id="CurrentUser" class="label label-default">Your Current Client: <b>@ViewBag.ClientName</b></span>
+                        <button id="SelectUser" class="btn btn-success">Change Client</button>
+                    }
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card cardmenu thumbnail">
+                        <div class="card-body">
+                            <h5 class="card-title">Log Metric</h5>
+                            <p class="card-text">Record measurements.</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="@(Url.Action("RecordMetric", "Metrics"))" class="btn btn-secondary bottom">Log Metric</a>
+                        </div>
                     </div>
-                    <div class="card-footer">
-                        <a href="@(Url.Action("RecordMetric", "Metrics"))" class="btn btn-secondary bottom">Log Metric</a>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card cardmenu thumbnail">
+                        <div class="card-body">
+                            <h5 class="card-title">Metric Progress</h5>
+                            <p class="card-text">Take a look at some grapghs about your client's progress.</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="@(Url.Action("Index", "Metrics"))" class="btn btn-secondary">Metric Progress</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card cardmenu thumbnail">
+                        <div class="card-body">
+                            <h5 class="card-title">Metric Management</h5>
+                            <p class="card-text">Create new metrics that you wnat to record of your clients.</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="@(Url.Action("NewTypeAndClass", "Metrics"))" class="btn btn-secondary">Metric Management</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card cardmenu thumbnail">
+                        <div class="card-body">
+                            <h5 class="card-title">Exercise Management</h5>
+                            <p class="card-text">Create new exercises and exercise categories.</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="@(Url.Action("ManageExercises", "Workout"))" class="btn btn-secondary">Exercise Management</a>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-3">
-                <div class="card cardmenu thumbnail">
-                    <div class="card-body">
-                        <h5 class="card-title">Metric Progress</h5>
-                        <p class="card-text">Take a look at some grapghs about your progress.</p>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card cardmenu thumbnail">
+                        <div class="card-body">
+                            <h5 class="card-title">Client Workouts</h5>
+                            <p class="card-text">View and complete a client's workout, update exercises and mark them as complete.</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="@(Url.Action("MyWorkouts", "Workout"))" class="btn btn-secondary">Client Workouts</a>
+                        </div>
                     </div>
-                    <div class="card-footer">
-                        <a href="@(Url.Action("", ""))" class="btn btn-secondary">Metric Progress</a>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card cardmenu thumbnail">
+                        <div class="card-body">
+                            <h5 class="card-title">Create Workout</h5>
+                            <p class="card-text">Create a new workout for your client.</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="@(Url.Action("CreateWorkout", "Workout"))" class="btn btn-secondary">Create Workout</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card cardmenu thumbnail">
+                        <div class="card-body">
+                            <h5 class="card-title">Workout Progress</h5>
+                            <p class="card-text">Take a look at you performace chart.</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="@(Url.Action("Index", "Workout"))" class="btn btn-secondary">Workout Progress</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card cardmenu thumbnail">
+                        <div class="card-body">
+                            <h5 class="card-title">Messages</h5>
+                            <p class="card-text">Get in touch with your team and see what they're up to.</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="@(Url.Action("", ""))" class="btn btn-secondary">Messages</a>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-3">
-                <div class="card cardmenu thumbnail">
-                    <div class="card-body">
-                        <h5 class="card-title">My Workouts</h5>
-                        <p class="card-text">View and complete a workout, update exercises and mark them as complete.</p>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card cardmenu thumbnail">
+                        <div class="card-body">
+                            <h5 class="card-title">Create Team</h5>
+                            <p class="card-text">Create a new team for users to chat together.</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="@(Url.Action("CreateTeam", "Accounts"))" class="btn btn-secondary">Create Team</a>
+                        </div>
                     </div>
-                    <div class="card-footer">
-                        <a href="@(Url.Action("MyWorkouts", "Workout"))" class="btn btn-secondary">My Workouts</a>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card cardmenu thumbnail">
+                        <div class="card-body">
+                            <h5 class="card-title">New User</h5>
+                            <p class="card-text">Add a new user to the system. New users will receive an invite.</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="@(Url.Action("AddUser", "Accounts"))" class="btn btn-secondary">New User</a>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-3">
-                <div class="card cardmenu thumbnail">
-                    <div class="card-body">
-                        <h5 class="card-title">Create Workout</h5>
-                        <p class="card-text">Create a new workout that you and your coach can see.</p>
-                    </div>
-                    <div class="card-footer">
-                        <a href="@(Url.Action("CreateWorkout", "Workout"))" class="btn btn-secondary">Create Workout</a>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="row">
-            <div class="col-md-3">
-                <div class="card cardmenu thumbnail">
-                    <div class="card-body">
-                        <h5 class="card-title">Workout Progress</h5>
-                        <p class="card-text">Take a look at you performace chart.</p>
+            <div id="SelectUserModal" class="modal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Select A Client</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div id="SelectUserModalBody" class="modal-body">
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Done</button>
+                        </div>
                     </div>
-                    <div class="card-footer">
-                        <a href="@(Url.Action("", ""))" class="btn btn-secondary">Workout Progress</a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card cardmenu thumbnail">
+                        <div class="card-body">
+                            <h5 class="card-title">Log Metric</h5>
+                            <p class="card-text">Record measurements.</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="@(Url.Action("RecordMetric", "Metrics"))" class="btn btn-secondary bottom">Log Metric</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card cardmenu thumbnail">
+                        <div class="card-body">
+                            <h5 class="card-title">Metric Progress</h5>
+                            <p class="card-text">Take a look at some grapghs about your progress.</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="@(Url.Action("Index", "Metrics"))" class="btn btn-secondary">Metric Progress</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card cardmenu thumbnail">
+                        <div class="card-body">
+                            <h5 class="card-title">My Workouts</h5>
+                            <p class="card-text">View and complete a workout, update exercises and mark them as complete.</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="@(Url.Action("MyWorkouts", "Workout"))" class="btn btn-secondary">My Workouts</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card cardmenu thumbnail">
+                        <div class="card-body">
+                            <h5 class="card-title">Create Workout</h5>
+                            <p class="card-text">Create a new workout that you and your coach can see.</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="@(Url.Action("CreateWorkout", "Workout"))" class="btn btn-secondary">Create Workout</a>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-3">
-                <div class="card cardmenu thumbnail">
-                    <div class="card-body">
-                        <h5 class="card-title">Messages</h5>
-                        <p class="card-text">Get in touch with your team and see what they're up to.</p>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card cardmenu thumbnail">
+                        <div class="card-body">
+                            <h5 class="card-title">Workout Progress</h5>
+                            <p class="card-text">Take a look at you performace chart.</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="@(Url.Action("Index", "Workout"))" class="btn btn-secondary">Workout Progress</a>
+                        </div>
                     </div>
-                    <div class="card-footer">
-                        <a href="@(Url.Action("", ""))" class="btn btn-secondary">Metric Progress</a>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card cardmenu thumbnail">
+                        <div class="card-body">
+                            <h5 class="card-title">Messages</h5>
+                            <p class="card-text">Get in touch with your team and see what they're up to.</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="@(Url.Action("", ""))" class="btn btn-secondary">Messages</a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        }
 
         <hr />
         <footer>
             <p>&copy; @DateTime.Now.Year - <i>CoachIt</i></p>
         </footer>
     </div>
+
+    <script>
+        $("#SelectUser").click(function (e) {
+            e.preventDefault();
+            
+            $.ajax({
+                type: "GET",
+                url: "/Account/GetUsersForModal",
+                success: function (data) {
+                    $('#SelectUserModalBody').html(data);
+                    $('#SelectUserModal').modal('show');
+                },
+                error: function (err) {
+                    alert(err.responseText);
+                }
+            });
+        });
+    </script>
 </body>
 </html>

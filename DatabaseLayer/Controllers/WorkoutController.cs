@@ -298,7 +298,7 @@ namespace DatabaseLayer.Controllers
 
                 WorkoutUser workoutUser = new WorkoutUser()
                 {
-                    UserId = 1,
+                    UserId = model.UserId,
                     Workout = model.WorkoutTitle,
                     Timestamp = DateTime.Now
                 };

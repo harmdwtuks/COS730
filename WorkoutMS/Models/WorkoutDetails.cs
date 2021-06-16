@@ -7,6 +7,7 @@ namespace WorkoutMS.Models
 {
     public class WorkoutDetails
     {
+        public int UserId { get; set; }
         public int WorkoutId { get; set; }
         public string WorkoutTitle { get; set; }
         public TimeSpan EstimatedDuration { get; set; }

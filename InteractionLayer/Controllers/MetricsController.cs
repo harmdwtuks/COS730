@@ -1,4 +1,5 @@
 ﻿using InteractionLayer.Models;
+using Microsoft.AspNet.Identity.Owin;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -7,11 +8,13 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Web;
 using System.Web.Mvc;
 
 namespace InteractionLayer.Controllers
 {
+    [Authorize]
     public class MetricsController : Controller
     {
         private static readonly string GetMetricClassesEndpoint = ConfigurationManager.AppSettings["GetMetricClassesEndpoint"];
@@ -28,18 +31,29 @@ namespace InteractionLayer.Controllers
         // GET: Metrics
         public ActionResult Index()
         {
-            // Grab all metric entries for the last 6 months(defalt) timespan can be changed later.
-            string JsonQuery = "{" +
-                                "\"userId\":\"" + "1" + "\"," +
-                                "\"dateFrom\":\"" + DateTime.Now.AddMonths(-6) + "\"," +
-                               "}";
+            // Grab all metric entries for the last 36 months(defalt) timespan can be changed later.
+            string JsonQuery = "{";
+
+            if (Session["ClientId"] == null && !(User.IsInRole("System Administrator") || User.IsInRole("Coach")))
+            {
+                string loggedInUserId = HttpContext.GetOwinContext().Authentication.User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
+
+                JsonQuery += "\"userId\":\"" + loggedInUserId + "\",";
+            }
+            else
+            {
+                JsonQuery += "\"userId\":\"" + Session["ClientId"].ToString() + "\",";
+                
+            }
+            
+            JsonQuery += "\"dateFrom\":\"" + DateTime.Now.AddMonths(-36) + "\"," +
+                            "}";
 
             JObject metrics = QueryMicroService(GetMetricsEndpoint, "POST", JsonQuery);
 
             MetricsViewMainModel model = new MetricsViewMainModel();
-
             model.MetricRecords = JsonConvert.DeserializeObject<List<MetricRecord>>(metrics["result"].ToString());
-
+            
             //// Split sperate into dictionary with types as keys and measurement as m
             //foreach(string type in records.Select(x => x.MetricType).Distinct())
             //{
@@ -47,7 +61,7 @@ namespace InteractionLayer.Controllers
             //}
 
             model.MetricTypes = model.MetricRecords.Select(x => x.MetricType).Distinct().OrderBy(z => z).ToList();
-            
+
             return View(model);
         }
 
@@ -77,7 +91,7 @@ namespace InteractionLayer.Controllers
                     writer.Write(jsonQuery);
                     writer.Flush();
                     writer.Close();
-                } 
+                }
             }
 
             dynamic jObj = new JObject();
@@ -131,7 +145,7 @@ namespace InteractionLayer.Controllers
 
                     result = result.Substring(1);
                     result = result.Substring(0, result.Length - 1);
-                    
+
                     jObj.status = "FAILED";
                     jObj.result = result;
 
@@ -152,9 +166,9 @@ namespace InteractionLayer.Controllers
             List<MetricClass> metricClasses = new List<MetricClass>();
 
             JObject jObj = QueryMicroService(GetMetricClassesEndpoint, "GET", "");
-            
+
             metricClasses = JsonConvert.DeserializeObject<List<MetricClass>>(jObj["result"].ToString());
-            
+
             return metricClasses;
         }
 
@@ -182,7 +196,7 @@ namespace InteractionLayer.Controllers
 
             return View(model);
         }
-        
+
         private List<MetricType> GetMetricTypesByClassId(int id)
         {
             List<MetricType> metricTypes = new List<MetricType>();
@@ -223,12 +237,26 @@ namespace InteractionLayer.Controllers
 
         private string AddNewMetric(MetricsMainModel obj)
         {
-            string JsonQuery = "{" +
-                                "\"MetricClass\":" + obj.MetricClass + "," +
-                                "\"MetricType\":\"" + obj.MetricType + "\"," +
-                                "\"Quantity\":" + obj.Quantity.ToString("0.#############", System.Globalization.CultureInfo.InvariantCulture) + "," +
-                                "\"Timestamp\":\"" + obj.Timestamp + "\"" +
-                               "}";
+            string JsonQuery = "{";
+
+            if (Session["ClientId"] == null && !(User.IsInRole("System Administrator") || User.IsInRole("Coach")))
+            {
+                string loggedInUserId = HttpContext.GetOwinContext().Authentication.User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
+
+                JsonQuery += "\"UserId\":\"" + loggedInUserId + "\",";
+            }
+            else
+            {
+                JsonQuery += "\"UserId\":\"" + Session["ClientId"].ToString() + "\",";
+                
+            }
+
+
+            JsonQuery += "\"MetricClass\":" + obj.MetricClass + "," +
+                            "\"MetricType\":\"" + obj.MetricType + "\"," +
+                            "\"Quantity\":" + obj.Quantity.ToString("0.#############", System.Globalization.CultureInfo.InvariantCulture) + "," +
+                            "\"Timestamp\":\"" + obj.Timestamp + "\"" +
+                            "}";
 
 
             JObject jObj = QueryMicroService(AddNewMetricRecordEndpoint, "POST", JsonQuery);
@@ -243,7 +271,7 @@ namespace InteractionLayer.Controllers
             {
                 message = $"Failed to record metric.\n{jObj["result"].ToString()}";
             }
-            
+
             return message;
         }
 
@@ -251,7 +279,7 @@ namespace InteractionLayer.Controllers
         {
             return Json(new { result = AddNewMetric(obj) }, JsonRequestBehavior.AllowGet);
         }
-        
+
         private List<MetricType> GetMetricTypes()
         {
             JObject jObj = QueryMicroService(GetMetricTypesEndpoint, "GET", "");
@@ -276,7 +304,7 @@ namespace InteractionLayer.Controllers
 
             return View(model);
         }
-        
+
         [HttpPost, ValidateAntiForgeryToken]
         public ActionResult NewMetricType(NewType newType)
         {
@@ -299,7 +327,7 @@ namespace InteractionLayer.Controllers
             {
                 message = $"Failed to create new type.\n{jObj["result"].ToString()}";
             }
-            
+
             return Json(new { message }, JsonRequestBehavior.AllowGet);
         }
 

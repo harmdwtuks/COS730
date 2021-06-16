@@ -8,11 +8,13 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Web;
 using System.Web.Mvc;
 
 namespace InteractionLayer.Controllers
 {
+    [Authorize]
     public class WorkoutController : Controller
     {
         private static readonly string GetWorkoutCategoriesEndpoint = ConfigurationManager.AppSettings["GetWorkoutCategoriesEndpoint"];
@@ -157,7 +159,7 @@ namespace InteractionLayer.Controllers
             return exercisesList;
         }
 
-        private List<WorkoutViewModel> GetWorkoutsForUser(int UserId = 0)
+        private List<WorkoutViewModel> GetWorkoutsForUser(int UserId)
         {
             string JsonQuery = "{" +
                                 "\"UserId\":\"" + UserId.ToString() + "\"" +
@@ -271,6 +273,17 @@ namespace InteractionLayer.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public ActionResult CreateNewWorkout(WorkoutViewModel model)
         {
+            if (Session["ClientId"] == null && !(User.IsInRole("System Administrator") || User.IsInRole("Coach")))
+            {
+                string loggedInUserId = HttpContext.GetOwinContext().Authentication.User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
+
+                model.UserId = Convert.ToInt32(loggedInUserId);
+            }
+            else
+            {
+                model.UserId = Convert.ToInt32(Session["ClientId"].ToString());
+            }
+
             JObject jObj = QueryMicroService(CreateWorkoutEndpoint, "POST", JsonConvert.SerializeObject(model));
 
             string message = "";
@@ -290,7 +303,17 @@ namespace InteractionLayer.Controllers
         [HttpGet]
         public ActionResult MyWorkouts()
         {
-            List<WorkoutViewModel> workouts = GetWorkoutsForUser(1);
+            List<WorkoutViewModel> workouts;
+            if (Session["ClientId"] == null && !(User.IsInRole("System Administrator") || User.IsInRole("Coach")))
+            {
+                string loggedInUserId = HttpContext.GetOwinContext().Authentication.User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
+
+                workouts = GetWorkoutsForUser(Convert.ToInt32(loggedInUserId));
+            }
+            else
+            {
+                workouts = GetWorkoutsForUser(Convert.ToInt32(Session["ClientId"].ToString()));
+            }
 
             List<List<WorkoutViewModel>> model = new List<List<WorkoutViewModel>>();
 
@@ -309,7 +332,17 @@ namespace InteractionLayer.Controllers
         [HttpGet]
         public ActionResult DoWorkout(int WorkoutId)
         {
-            WorkoutViewModel model = GetWorkoutsForUser(1).FirstOrDefault(x => x.WorkoutId == WorkoutId);
+            WorkoutViewModel model;
+            if (Session["ClientId"] == null && !(User.IsInRole("System Administrator") || User.IsInRole("Coach")))
+            {
+                string loggedInUserId = HttpContext.GetOwinContext().Authentication.User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
+                
+                model = GetWorkoutsForUser(Convert.ToInt32(loggedInUserId)).FirstOrDefault(x => x.WorkoutId == WorkoutId);
+            }
+            else
+            {
+                model = GetWorkoutsForUser(Convert.ToInt32(Session["ClientId"].ToString())).FirstOrDefault(x => x.WorkoutId == WorkoutId);
+            }
 
             return View(model);
         }

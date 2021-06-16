@@ -14,6 +14,27 @@ namespace InteractionLayer.Controllers
     [Authorize]
     public class HomeController : Controller
     {
+        [HttpGet, AllowAnonymous]
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        public ActionResult About()
+        {
+            ViewBag.Message = "Your application description page.";
+
+            return View();
+        }
+
+        [Authorize(Roles = "System Administrator")]
+        public ActionResult Contact()
+        {
+            ViewBag.Message = "Your contact page.";
+
+            return View();
+        }
+
         private static readonly string LoginEndpoint = ConfigurationManager.AppSettings["LoginEndpoint"];
 
         /// <summary>
@@ -112,12 +133,12 @@ namespace InteractionLayer.Controllers
             }
         }
 
-        [HttpGet, AllowAnonymous]
-        public ActionResult Index()
-        {
-            return View(new Login());
-        }
-        
+        //[HttpGet, AllowAnonymous]
+        //public ActionResult Index()
+        //{
+        //    return View(new Login());
+        //}
+
         [AllowAnonymous, HttpPost, ValidateAntiForgeryToken]
         public ActionResult Index(Login login)
         {
@@ -149,24 +170,15 @@ namespace InteractionLayer.Controllers
                 return jObj["result"].ToString();
             }
         }
-
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-
-            return View();
-        }
-
-        [HttpGet, AllowAnonymous]
+        
+        [HttpGet]
         public ActionResult LandingPage()
         {
+            if (Session["ClientId"] != null && Session["ClientName"] != null)
+            {
+                ViewBag.ClientName = Session["ClientName"].ToString();
+            }
+
             return View();
         }
     }

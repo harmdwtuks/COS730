@@ -3,61 +3,40 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CoachIt</title>
+    <title>@ViewBag.Title - My ASP.NET Application</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+
 </head>
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="@(Url.Action("Index", "Home"))">CoachIt</a>
+                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
-            <div class="collapse navbar-collapse" id="myNavbar">
+            <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="@(Url.Action("Index", "Home"))">Home</a></li>
-                    @*<li><a href="@(Url.Action("About", "Home"))">About</a></li>
-                    <li><a href="@(Url.Action("Contact", "Home"))">Contact</a></li>*@
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Metrics<span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="@(Url.Action("Index", "Metrics"))">View</a></li>
-                            <li><a href="@(Url.Action("RecordMetric", "Metrics"))">Record</a></li>
-                            <li><a href="@(Url.Action("NewTypeAndClass", "Metrics"))">Manage</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Workouts<span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="@(Url.Action("ManageExercises", "Workout"))">Manage Exercises</a></li>
-                            <li><a href="@(Url.Action("CreateWorkout", "Workout"))">Create Workout</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Users<span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="@(Url.Action("AddUser", "Accounts"))">New User</a></li>
-                            <li><a href="@(Url.Action("CreateTeam", "Accounts"))">New Team</a></li>
-                        </ul>
-                    </li>
+                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+
+                    @if(User.IsInRole("System Administrator")){
+                        <li>@Html.ActionLink("About", "About", "Home")</li>
+                        <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                    }
                 </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-                    <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-                </ul>
+                @Html.Partial("_LoginPartial")
             </div>
         </div>
-    </nav>
+    </div>
     <div class="container body-content">
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - <i>CoachIt</i></p>
+            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
         </footer>
     </div>
 

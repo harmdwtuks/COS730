@@ -1,0 +1,44 @@
+﻿@model List<InteractionLayer.Models.User.UserViewModel>
+
+<form id="UserDropdownForm">
+    @Html.AntiForgeryToken()
+
+    @Html.DropDownList("UserDropDown",
+        new SelectList(Model.Select(a =>
+                              new SelectListItem
+                              {
+                                  Value = a.UserId.ToString(),
+                                  Text = a.Username + " - " + a.FirstName + " " + a.Surname
+                              }).ToList(), "Value", "Text"),
+        "Select User",
+        new { @class = "form-control" })
+</form>
+
+
+<script>
+    $("#UserDropDown").change(function (e) {
+        e.preventDefault();
+        
+        var ClientName = $(this).children("option:selected").text();
+
+        var form = $('#UserDropdownForm');
+        var token = $('input[name="__RequestVerificationToken"]', form).val();
+
+        
+
+        $.ajax({
+            type: "POST",
+            url: "/Account/SetUserFromModal",
+            data: { __RequestVerificationToken: token, "ClientId": $(this).children("option:selected").val(), "ClientName": ClientName },
+            datatype: "json",
+            success: function (data) {
+                $('#CurrentUser').removeAttr('hidden');
+                $('#CurrentUser').html('Your Current Client: <b>' + ClientName + '</b>');
+                $('#SelectUser').html('Change Client');
+            },
+            error: function (err) {
+                alert(err.responseText);
+            }
+        });
+    });
+</script>

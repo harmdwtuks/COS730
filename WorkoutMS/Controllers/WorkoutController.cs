@@ -130,31 +130,19 @@ namespace WorkoutMS.Controllers
             return records;
         }
 
-        private List<WorkoutDetails> GetWorkouts(int userId = 0)
+        private List<WorkoutDetails> GetWorkouts(int userId)
         {
             List<WorkoutDetails> records = new List<WorkoutDetails>();
+            
+            string JsonQuery = "{" +
+                            "\"UserId\":\"" + userId.ToString() + "\"" +
+                            "}";
 
-            if (userId == 0)
+            JObject jObj = CallAPI(GetWorkoutsEndpoint, "POST", JsonQuery);
+
+            if (jObj["status"].ToString() == "OK")
             {
-                JObject jObj = CallAPI(GetAllWorkoutsEndpoint, "GET", "");
-
-                if (jObj["status"].ToString() == "OK")
-                {
-                    records = JsonConvert.DeserializeObject<List<WorkoutDetails>>(jObj["result"].ToString().Replace("\\\"", "\""));
-                }
-            }
-            else
-            {
-                string JsonQuery = "{" +
-                                "\"UserId\":\"" + userId.ToString() + "\"" +
-                               "}";
-
-                JObject jObj = CallAPI(GetWorkoutsEndpoint, "POST", JsonQuery);
-
-                if (jObj["status"].ToString() == "OK")
-                {
-                    records = JsonConvert.DeserializeObject<List<WorkoutDetails>>(jObj["result"].ToString().Replace("\\\"", "\""));
-                }
+                records = JsonConvert.DeserializeObject<List<WorkoutDetails>>(jObj["result"].ToString().Replace("\\\"", "\""));
             }
 
             return records;
@@ -295,7 +283,7 @@ namespace WorkoutMS.Controllers
             
             // Check if workout name FOR THIS USER does not already exist.
             ///TODO: add user check as part of name query.
-            if (GetWorkouts().FirstOrDefault(x => x.WorkoutTitle.Trim().ToUpper() == newWorkout.WorkoutTitle.Trim().ToUpper()) != null)
+            if (GetWorkouts(newWorkout.UserId).FirstOrDefault(x => x.WorkoutTitle.Trim().ToUpper() == newWorkout.WorkoutTitle.Trim().ToUpper()) != null)
             {
                 jObjReturn.status = "FAILED";
                 jObjReturn.result = $"Workout with this name already exists!";

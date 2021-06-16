@@ -2,78 +2,30 @@
     ViewBag.Title = "Home Page";
 }
 
-@model InteractionLayer.Models.Login
+<div class="jumbotron">
+    <h1>ASP.NET</h1>
+    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
+    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+</div>
 
-<div id="homepage">
-    <div class="row">
-        <div class="col-md-12 text-center">
-            <img src="~/images/CoachIt.png" style="width:40%;" />
-        </div>
+<div class="row">
+    <div class="col-md-4">
+        <h2>Getting started</h2>
+        <p>
+            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
+            enables a clean separation of concerns and gives you full control over markup
+            for enjoyable, agile development.
+        </p>
+        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
     </div>
-    <br />
-    <div class="row">
-        <div class="col-md-6 text-right">
-            <br />
-            <div class="row">
-                <div class="col-md-12 ">
-                    <h4><i>Welcome to Your Digital Coaching Companion</i></h4>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <p>
-                        To <i>empower</i>, <br />
-                        <b>teach</b>, <br />
-                        <u>manage</u>, <br />
-                        <b>monitor</b> <br />
-                        and coach <br />
-                        <i>towards wellness and fitness.</i>
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="row">
-                <div class="col-md-12">
-                    <h3><i>Login</i></h3>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <form method="POST" id="loginForm" name="loginForm" redirect="true">
-                        @Html.AntiForgeryToken()
-                        <div class="row">
-                            <div class="col-md-12">
-                                <label for="name-5a14" class="u-form-control-hidden u-label" wfd-invisible="true">Username</label>
-                                <br />
-                                <input asp-for="Username" type="text" placeholder="Enter Username" id="Username" name="Username" class="form-control text-center" required="required" autofocus="autofocus">
-                            </div>
-                        </div>
-                        <br />
-                        <div class="row">
-                            <div class="col-md-12">
-                                <label for="email-5a14" class="u-form-control-hidden u-label" wfd-invisible="true">Password</label>
-                                <br />
-                                <input asp-for="Password" type="password" placeholder="Enter Password" id="email-5a14" name="password" class="form-control text-center" required="required">
-                                @*<span class="btn-show-pass">
-                                    <i id="showPassword" class="fas fa-eye-slash"></i>
-                                </span>*@
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-3" style="margin-top:3%">
-                                @*<a href="#" class="u-btn u-btn-round u-btn-submit u-button-style u-hover-palette-1-dark-1 u-palette-1-base u-radius-12 u-btn-1">Submit</a>*@
-                                @*<input type="submit" value="submit" class="btn btn-success">*@
-                                <button type="submit" class="btn btn-success">Log In</button>
-                            </div>
-                            <div class="col-md-3" style="margin-top:3%">
-                                <a href="https://google.com" class="btn btn-warning">Forgot Password</a>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+    <div class="col-md-4">
+        <h2>Get more libraries</h2>
+        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
+        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Web Hosting</h2>
+        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
+        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
     </div>
 </div>

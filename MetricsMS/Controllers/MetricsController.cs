@@ -329,7 +329,7 @@ namespace MetricsMS.Controllers
             MetricRecord newRec = jsonResult.ToObject<MetricRecord>();
 
             // Check if same class and type not already logged for the provided timestamp
-            if (CheckSameTypeForDate(newRec.Timestamp, newRec.MetricType, newRec.Quantity))
+            if (CheckSameTypeForDate(newRec.UserId, newRec.Timestamp, newRec.MetricType, newRec.Quantity))
             {
                 return Ok("Metric and date already inserted.");
             }
@@ -348,22 +348,18 @@ namespace MetricsMS.Controllers
             return BadRequest("Problem adding new metric.");
         }
 
-        private bool CheckSameTypeForDate(DateTime timestamp, int type, double quantity)
+        private bool CheckSameTypeForDate(int userId, DateTime timestamp, int type, double quantity)
         {
             // API call
             HttpWebRequest request = WebRequest.Create(GetUserRecordsEndpoint) as HttpWebRequest;
             request.ContentType = "text/json";
             request.Method = "POST";
-            //request.Headers.Add("Subscription-Key", VumacamSubscriptionKey);
-            //request.Headers.Add("Authorization", "Bearer " + BearerToken);
-
 
             string JsonQuery = "{" +
-                                "\"userId\":\"" + GetPropertyFromClaims("UserId") + "\"," +
+                                "\"userId\":\"" + userId + "\"," +
                                 "\"dateFrom\":\"" + timestamp + "\"," +
                                 "\"dateTo\":\"" + timestamp + "\"," +
                                 "\"metricTypeId\":\"" + type + "\"," +
-                                //"\"metricClassId\":\"" +  + "\"," +
                                "}";
 
             using (StreamWriter writer = new StreamWriter(request.GetRequestStream()))
@@ -413,7 +409,7 @@ namespace MetricsMS.Controllers
 
 
             string JsonQuery = "{" +
-                                "\"userId\":\"" + GetPropertyFromClaims("UserId") + "\"," +
+                                "\"userId\":\"" + newRec.UserId + "\"," +
                                 "\"timestamp\":\"" + newRec.Timestamp + "\"," +
                                 "\"metricTypeId\":\"" + newRec.MetricType + "\"," +
                                 "\"measurement\":\"" + newRec.Quantity + "\"," +

@@ -7,6 +7,7 @@ namespace MetricsMS.Models
 {
     public class MetricRecord
     {
+        public int UserId { get; set; }
         public int MetricClass { get; set; }
         public int MetricType { get; set; }
         public double Quantity { get; set; }

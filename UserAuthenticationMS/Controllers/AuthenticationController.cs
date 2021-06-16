@@ -115,6 +115,7 @@ namespace UserAuthenticationMS.Controllers
 
                 List<KeyValuePair<string, string>> claimsForToken = new List<KeyValuePair<string, string>>();
                 claimsForToken.Add(new KeyValuePair<string, string>("UserId", user.UserId.ToString()));
+                claimsForToken.Add(new KeyValuePair<string, string>("UserRole", JsonConvert.SerializeObject(Roles.GetRolesForUser(model.Username))));
 
                 _db.Dispose();
 
@@ -274,6 +275,42 @@ namespace UserAuthenticationMS.Controllers
 
                 jObjReturn.status = "OK";
                 jObjReturn.result = JsonConvert.SerializeObject(existingRoles);
+            }
+            catch (Exception exception)
+            {
+                jObjReturn.status = "FAILED";
+                jObjReturn.result = $"Could get Roles.\n{exception.Message}";
+            }
+
+            return Ok(jObjReturn);
+        }
+
+        [HttpGet]
+        [Route("GetUsers")]
+        public IHttpActionResult GetUsers()
+        {
+            dynamic jObjReturn = new JObject();
+
+            try
+            {
+                CoachItEntities _db = new CoachItEntities();
+
+                var existingUsers =
+                        (from s in _db.webpages_Users
+                         select new
+                         {
+                             s.UserId,
+                             s.Username,
+                             s.FirstName,
+                             s.Surname,
+                             s.EmailAddress,
+                             s.ContactNumber
+                         }).ToList();
+
+                _db.Dispose();
+
+                jObjReturn.status = "OK";
+                jObjReturn.result = JsonConvert.SerializeObject(existingUsers);
             }
             catch (Exception exception)
             {
