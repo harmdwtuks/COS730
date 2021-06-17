@@ -70,7 +70,7 @@
                         <br />
                         <div class="btn-group">
                             <button data-val="@exercise.Duration" data-id="@rowNum" id="Timer_@rowNum" class="btn btn-info Timer">Timer</button>
-                            <button class="btn btn-primary Stopwatch">Stopwatch</button>
+                            <button id="Stopwatch_@rowNum" data-id="@rowNum" class="btn btn-primary Stopwatch">Stopwatch</button>
                             @*<button data-Id="@rowNum" class="btn btn-success CompleteExercise">Finish</button>*@
                         </div>
                     </div>
@@ -166,30 +166,43 @@
             timerRun(seconds, counter, "#Duration_" + recordId);
         }, 1000);
     });
-    
-    function startStopwatch() {
-        const button = document.getElementById('btnStopwatch');
-        var counter = 0;
 
-        if (button.innerText === "Start Stopwatch") {
-            button.innerText = "Stop Stopwatch";
+    $(".Stopwatch").click(function (e) {
+        e.preventDefault();
+
+        var recordId = $(this).data("id");
+
+        var button = $(this);
+        var counter = 0;
+        
+        if (button.html() === "Stopwatch") {
+            button.html("Stop Stopwatch");
+
+            $("#Duration_" + recordId).css("background-color", "red");
+            $("#Duration_" + recordId).css("color", "white");
+            $("#Duration_" + recordId).css("opacity", "0.6");
 
             // Using the registered interval, call the function every second
             interval = window.setInterval(function () {
                 counter++;
                 var remain = new Date((counter) * 1000).toISOString().substr(11, 8);
+
                 // Update the textbox with the remaining time
-                document.getElementById('period').value = remain;
+                $("#Duration_" + recordId).val(remain);
             }, 1000);
         } else {
-            button.innerText = "Start Stopwatch"
+            button.html("Stopwatch");
             //var remain = new Date(0).toISOString().substr(11, 8)
             //// Update the textbox with the remaining time
             //document.getElementById('period').value = remain;
+
+            $("#Duration_" + recordId).css("background-color", "white");
+            $("#Duration_" + recordId).css("color", "black");
+            $("#Duration_" + recordId).css("opacity", "1");
             clearInterval(interval);
         }
-    }
-
+    });
+    
     // Count down
     function timerRun(seconds, counter, updateElementId) {
         if (seconds > counter) {
