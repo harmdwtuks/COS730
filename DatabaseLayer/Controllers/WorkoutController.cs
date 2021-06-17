@@ -336,6 +336,46 @@ namespace DatabaseLayer.Controllers
             return Ok(jObjReturn);
         }
 
+        [HttpPost]
+        [Route("CompleteWorkout")]
+        public IHttpActionResult CompleteWorkout([FromBody] JObject jsonResult)
+        {
+            dynamic jObjReturn = new JObject();
+
+            try
+            {
+                DetailsViewModel workout = jsonResult.ToObject<DetailsViewModel>();
+
+                CoachItEntities _db = new CoachItEntities();
+                foreach (var exercise in workout.Exercises)
+                {
+                    _db.WorkoutExerciseLinkCompleteds.Add(
+                        new WorkoutExerciseLinkCompleted()
+                        {
+                            WorkoutExerciseLinkId = exercise.Id,
+                            Timestamp = DateTime.Now,
+                            Sets = exercise.Sets,
+                            Repititions = exercise.Repititions,
+                            Duration = exercise.Duration,
+                            Weight = exercise.Weight,
+                        });
+                }
+
+                _db.SaveChanges();
+                _db.Dispose();
+
+                jObjReturn.status = "OK";
+                jObjReturn.result = "New workout created successfully!";
+            }
+            catch (Exception ex)
+            {
+                jObjReturn.status = "FAILED";
+                jObjReturn.result = ex.Message;
+            }
+            
+            return Ok(jObjReturn);
+        }
+
         #endregion WorkoutCategory Actions
     }
 }

@@ -37,5 +37,8 @@ namespace DatabaseLayer.Models
         public virtual DbSet<WorkoutExercis> WorkoutExercises { get; set; }
         public virtual DbSet<WorkoutUser> WorkoutUsers { get; set; }
         public virtual DbSet<WorkoutExercisesLInk> WorkoutExercisesLInks { get; set; }
+        public virtual DbSet<Team> Teams { get; set; }
+        public virtual DbSet<TeamsUser> TeamsUsers { get; set; }
+        public virtual DbSet<WorkoutExerciseLinkCompleted> WorkoutExerciseLinkCompleteds { get; set; }
     }
 }

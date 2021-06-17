@@ -23,6 +23,7 @@ namespace InteractionLayer.Controllers
         private static readonly string CreateWorkoutExerciseEndpoint = ConfigurationManager.AppSettings["CreateWorkoutExerciseEndpoint"];
         private static readonly string CreateWorkoutEndpoint = ConfigurationManager.AppSettings["CreateWorkoutEndpoint"];
         private static readonly string GetUserWorkoutsEndpoint = ConfigurationManager.AppSettings["GetUserWorkoutsEndpoint"];
+        private static readonly string CompleteWorkoutEndpoint = ConfigurationManager.AppSettings["CompleteWorkoutEndpoint"];
 
         /// <summary>
         /// Generic API call funtion.
@@ -345,6 +346,36 @@ namespace InteractionLayer.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public ActionResult CompleteWorkout(WorkoutViewModel model)
+        {
+            if (Session["ClientId"] == null && !(User.IsInRole("System Administrator") || User.IsInRole("Coach")))
+            {
+                string loggedInUserId = HttpContext.GetOwinContext().Authentication.User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
+
+                model.UserId = Convert.ToInt32(loggedInUserId);
+            }
+            else
+            {
+                model.UserId = Convert.ToInt32(Session["ClientId"].ToString());
+            }
+
+            JObject jObj = QueryMicroService(CompleteWorkoutEndpoint, "POST", JsonConvert.SerializeObject(model));
+
+            string message = "";
+
+            if (jObj["status"].ToString() == "OK")
+            {
+                message = jObj["result"].ToString();
+            }
+            else
+            {
+                message = $"Failed to complete workout.\n{jObj["result"].ToString()}";
+            }
+
+            return Json(new { message }, JsonRequestBehavior.AllowGet);
         }
     }
 }

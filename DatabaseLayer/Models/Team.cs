@@ -12,25 +12,21 @@ namespace DatabaseLayer.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class WorkoutExercisesLInk
+    public partial class Team
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public WorkoutExercisesLInk()
+        public Team()
         {
-            this.WorkoutExerciseLinkCompleteds = new HashSet<WorkoutExerciseLinkCompleted>();
+            this.TeamsUsers = new HashSet<TeamsUser>();
         }
     
         public int Id { get; set; }
-        public int WorkoutUsersId { get; set; }
-        public int ExerciseId { get; set; }
-        public int Sets { get; set; }
-        public int Repititions { get; set; }
-        public System.TimeSpan Duration { get; set; }
-        public double Weight { get; set; }
+        public string TeamName { get; set; }
+        public System.DateTime Timestamp { get; set; }
+        public int CreatorId { get; set; }
     
-        public virtual WorkoutExercis WorkoutExercis { get; set; }
-        public virtual WorkoutUser WorkoutUser { get; set; }
+        public virtual webpages_Users webpages_Users { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<WorkoutExerciseLinkCompleted> WorkoutExerciseLinkCompleteds { get; set; }
+        public virtual ICollection<TeamsUser> TeamsUsers { get; set; }
     }
 }

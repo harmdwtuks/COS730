@@ -20,6 +20,8 @@ namespace DatabaseLayer.Models
             this.MetricRecords = new HashSet<MetricRecord>();
             this.webpages_Roles = new HashSet<webpages_Roles>();
             this.WorkoutUsers = new HashSet<WorkoutUser>();
+            this.Teams = new HashSet<Team>();
+            this.TeamsUsers = new HashSet<TeamsUser>();
         }
     
         public int UserId { get; set; }
@@ -36,5 +38,9 @@ namespace DatabaseLayer.Models
         public virtual ICollection<webpages_Roles> webpages_Roles { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<WorkoutUser> WorkoutUsers { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Team> Teams { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TeamsUser> TeamsUsers { get; set; }
     }
 }

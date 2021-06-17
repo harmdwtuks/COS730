@@ -196,6 +196,12 @@
     <Compile Include="Models\MetricUnit.cs">
       <DependentUpon>CoachIt.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Team.cs">
+      <DependentUpon>CoachIt.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TeamsUser.cs">
+      <DependentUpon>CoachIt.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\webpages_Membership.cs">
       <DependentUpon>CoachIt.tt</DependentUpon>
     </Compile>
@@ -212,6 +218,9 @@
       <DependentUpon>CoachIt.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\WorkoutExerciseCategory.cs">
+      <DependentUpon>CoachIt.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\WorkoutExerciseLinkCompleted.cs">
       <DependentUpon>CoachIt.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\WorkoutExercisesLInk.cs">

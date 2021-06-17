@@ -2,16 +2,19 @@
 
 @{
     ViewBag.Title = "DoWorkout";
+    int rowNum = -1;
 }
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
 <h2>Workout</h2>
 
-
-<form id="NewWorkoutForm">
+<form id="DoWorkoutForm">
     @Html.AntiForgeryToken()
     <div class="row">
         <div class="col-md-12">
             <h3>@Model.WorkoutTitle</h3>
+            @Html.Hidden("WorkoutId", Model.WorkoutId)
         </div>
     </div>
 
@@ -28,44 +31,47 @@
         <div class="col-md-12">
             @foreach (var exercise in Model.Exercises)
             {
+                rowNum++;
                 <div class="row">
                     <div class="col-md-3">
                         <label>Exercise</label>
                         <br />
-                        <input id="Exercise" name="Exercise" disabled class="form-control" value="@exercise.ExerciseName">
+                        <input id="ExerciseId_@rowNum" name="Exercises[@rowNum].Id" type="hidden" value="@exercise.Id">
+                        <input id="ExerciseId_@rowNum" name="Exercises[@rowNum].ExerciseId" type="hidden" value="@exercise.ExerciseId">
+                        <input id="Exercise_@rowNum" name="Exercises[@rowNum].ExerciseName" disabled class="form-control" value="@exercise.ExerciseName">
                     </div>
 
                     <div class="col-md-1">
                         <label>Sets</label>
                         <br />
-                        <input id="Sets" name="Sets" type="number" class="form-control" value="@exercise.Sets">
+                        <input id="Sets_@rowNum" name="Exercises[@rowNum].Sets" type="number" class="form-control" value="@exercise.Sets">
                     </div>
 
                     <div class="col-md-1">
                         <label>Repititions</label>
                         <br />
-                        <input id="Repititions" name="Repititions" type="number" class="form-control" value="@exercise.Repititions">
+                        <input id="Repititions_@rowNum" name="Exercises[@rowNum].Repititions" type="number" class="form-control" value="@exercise.Repititions">
                     </div>
 
                     <div class="col-md-2">
                         <label>Weight</label>
                         <br />
-                        <input id="Weight" name="Weight" type="number" class="form-control" value="@exercise.Weight">
+                        <input id="Weight_@rowNum" name="Exercises[@rowNum].Weight" type="number" class="form-control" value="@exercise.Weight">
                     </div>
 
                     <div class="col-md-2">
                         <label>Duration</label>
                         <br />
-                        <input id="Duration" type="time" name="Duration" class="form-control" step="1" value="@exercise.Duration" pattern="[0-9]{2}:[0-9]{2}:[0-9]{2}">
+                        <input id="Duration_@rowNum" data-duration="@exercise.Duration" type="time" name="Exercises[@rowNum].Duration" class="form-control" step="1" value="@exercise.Duration" pattern="[0-9]{2}:[0-9]{2}:[0-9]{2}">
                     </div>
 
                     <div class="col-md-3">
                         <label></label>
                         <br />
                         <div class="btn-group">
-                            <button id="Timer" data-val="@exercise.Duration" class="btn btn-info">Timer</button>
-                            <button id="Stopwatch" class="btn btn-primary">Stopwatch</button>
-                            <button id="CompleteWorkout" data-Id="@exercise.ExerciseId" class="btn btn-success">Finish</button>
+                            <button data-val="@exercise.Duration" data-id="@rowNum" id="Timer_@rowNum" class="btn btn-info Timer">Timer</button>
+                            <button class="btn btn-primary Stopwatch">Stopwatch</button>
+                            @*<button data-Id="@rowNum" class="btn btn-success CompleteExercise">Finish</button>*@
                         </div>
                     </div>
                 </div>
@@ -81,3 +87,126 @@
         </div>
     </div>
 </form>
+
+<script>
+    //$(".CompleteExercise").click(function (e) {
+    //    e.preventDefault();
+        
+    //    var form = $('#DoWorkoutForm');
+    //    var token = $('input[name="__RequestVerificationToken"]', form).val();
+
+    //    var recordId = $(this).data("id");
+
+    //    var ExerciseId = $("#ExerciseId_" + recordId).val();
+    //    var Sets = $("#Sets_" + recordId).val();
+    //    var Repititions = $("#Repititions_" + recordId).val();
+    //    var Weight = $("#Weighte_" + recordId).val();
+    //    var Duration = $("#Duration_" + recordId).val();
+
+    //    alert("ExerciseId " + ExerciseId + "\nSets " + Sets + "\nRepititions " + Repititions + "\nWeight " + Weight + "\nDuration " + Duration);
+
+    //    alert({ __RequestVerificationToken: token, "ExerciseId": ExerciseId, "Sets": Sets, "Repititions": Repititions, "Weight": Weight, "Duration": Duration });
+
+    //    //$.ajax({
+    //    //    type: "POST",
+    //    //    url: "/Workout/",
+    //    //    data: { __RequestVerificationToken: token, "ClientId": $(this).children("option:selected").val(), "ClientName": ClientName },
+    //    //    datatype: "json",
+    //    //    success: function (data) {
+    //    //        $('#CurrentUser').removeAttr('hidden');
+    //    //        $('#CurrentUser').html('Your Current Client: <b>' + ClientName + '</b>');
+    //    //        $('#SelectUser').html('Change Client');
+    //    //    },
+    //    //    error: function (err) {
+    //    //        alert(err.responseText);
+    //    //    }
+    //    //});
+    //});
+
+    $("#CompleteWorkout").click(function (e) {
+        e.preventDefault();
+
+        $.ajax({
+            type: "POST",
+            url: "/Workout/CompleteWorkout",
+            datatype: "json",
+            data: $("form[id=DoWorkoutForm]").serialize(),
+            success: function (data) {
+                alert(data.message);
+            },
+            error: function (err) {
+                alert(err.responseText);
+            }
+        });
+    });
+
+
+    // Intanstiate the register
+    var interval;
+
+    $(".Timer").click(function (e) {
+        e.preventDefault();
+
+        var recordId = $(this).data("id");
+
+        // Read the time in the textbox and convert to seconds
+        var counter = 0;
+        var period = $("#Duration_" + recordId).val();
+        var periodString = period.split(':');
+        var seconds = (+periodString[0]) * 60 * 60 + (+periodString[1]) * 60 + (+periodString[2]);
+
+        //$("#Duration_" + recordId).css("background-color", "rgba{255,0,0,0.2}");
+        $("#Duration_" + recordId).css("background-color", "red");
+        $("#Duration_" + recordId).css("color", "white");
+        $("#Duration_" + recordId).css("opacity", "0.6");
+
+        // Using the registered interval, call the function every second
+        interval = window.setInterval(function () {
+            counter++;
+            timerRun(seconds, counter, "#Duration_" + recordId);
+        }, 1000);
+    });
+    
+    function startStopwatch() {
+        const button = document.getElementById('btnStopwatch');
+        var counter = 0;
+
+        if (button.innerText === "Start Stopwatch") {
+            button.innerText = "Stop Stopwatch";
+
+            // Using the registered interval, call the function every second
+            interval = window.setInterval(function () {
+                counter++;
+                var remain = new Date((counter) * 1000).toISOString().substr(11, 8);
+                // Update the textbox with the remaining time
+                document.getElementById('period').value = remain;
+            }, 1000);
+        } else {
+            button.innerText = "Start Stopwatch"
+            //var remain = new Date(0).toISOString().substr(11, 8)
+            //// Update the textbox with the remaining time
+            //document.getElementById('period').value = remain;
+            clearInterval(interval);
+        }
+    }
+
+    // Count down
+    function timerRun(seconds, counter, updateElementId) {
+        if (seconds > counter) {
+            var remain = new Date((seconds - counter) * 1000).toISOString().substr(11, 8)
+        } else {
+            var remain = new Date(0).toISOString().substr(11, 8)
+            clearInterval(interval);
+            //document.getElementById('completeSound').play();
+            $(updateElementId).css("background-color", "green");
+            $(updateElementId).css("color", "white");
+            $(updateElementId).css("opacity", "0.6");
+
+            remain = $(updateElementId).data("duration");
+            $(updateElementId).val(remain);
+        }
+        
+        // Update the textbox with the remaining time
+        $(updateElementId).val(remain);
+    };
+</script>

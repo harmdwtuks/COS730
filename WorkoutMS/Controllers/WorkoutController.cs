@@ -23,6 +23,7 @@ namespace WorkoutMS.Controllers
         private static readonly string CreateWorkoutCategoryEndpoint = ConfigurationManager.AppSettings["CreateWorkoutCategoryEndpoint"];
         private static readonly string CreateWorkoutExerciseEndpoint = ConfigurationManager.AppSettings["CreateWorkoutExerciseEndpoint"];
         private static readonly string CreateWorkoutEndpoint = ConfigurationManager.AppSettings["CreateWorkoutEndpoint"];
+        private static readonly string CompleteWorkoutEndpoint = ConfigurationManager.AppSettings["CompleteWorkoutEndpoint"];
 
         /// <summary>
         /// Generic API call funtion.
@@ -37,8 +38,6 @@ namespace WorkoutMS.Controllers
             HttpWebRequest request = WebRequest.Create(endPoint) as HttpWebRequest;
             request.ContentType = "application/json";
             request.Method = requestMethod.Trim().ToUpper(); // Normalize.
-            //request.Headers.Add("Subscription-Key", VumacamSubscriptionKey);
-            //request.Headers.Add("Authorization", "Bearer " + BearerToken);
 
             if (!String.IsNullOrWhiteSpace(jsonQuery))
             {
@@ -282,7 +281,6 @@ namespace WorkoutMS.Controllers
             }
             
             // Check if workout name FOR THIS USER does not already exist.
-            ///TODO: add user check as part of name query.
             if (GetWorkouts(newWorkout.UserId).FirstOrDefault(x => x.WorkoutTitle.Trim().ToUpper() == newWorkout.WorkoutTitle.Trim().ToUpper()) != null)
             {
                 jObjReturn.status = "FAILED";
@@ -322,6 +320,38 @@ namespace WorkoutMS.Controllers
             jObj.result = JsonConvert.SerializeObject(model);
 
             return Ok(jObj);
+        }
+
+        [HttpPost]
+        [Route("CompleteWorkout")]
+        public IHttpActionResult CompleteWorkout([FromBody] JObject jsonResult)
+        {
+            dynamic jObjReturn = new JObject();
+
+            try
+            {
+                WorkoutDetails workout = jsonResult.ToObject<WorkoutDetails>();
+                
+                JObject jObj = CallAPI(CompleteWorkoutEndpoint, "POST", jsonResult.ToString());
+
+                if (jObj["status"].ToString() == "OK")
+                {
+                    jObjReturn.status = "OK";
+                    jObjReturn.result = "New workout created successfully!";
+                }
+                else
+                {
+                    jObjReturn.status = "FAILED";
+                    jObjReturn.result = $"Failed to create new workouts.\n{jObj["result"].ToString()}";
+                }
+            }
+            catch (Exception ex)
+            {
+                jObjReturn.status = "FAILED";
+                jObjReturn.result = ex.Message;
+            }
+
+            return Ok(jObjReturn);
         }
     }
 }
