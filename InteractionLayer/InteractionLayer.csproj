@@ -271,6 +271,7 @@
     <Content Include="Views\Account\AddUser.cshtml" />
     <Content Include="Views\Account\CreateTeam.cshtml" />
     <Content Include="Views\Account\SetPassword.cshtml" />
+    <Content Include="Views\Metrics\LineChart.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

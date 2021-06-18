@@ -91,7 +91,7 @@
 <script>
     //$(".CompleteExercise").click(function (e) {
     //    e.preventDefault();
-        
+
     //    var form = $('#DoWorkoutForm');
     //    var token = $('input[name="__RequestVerificationToken"]', form).val();
 
@@ -174,7 +174,7 @@
 
         var button = $(this);
         var counter = 0;
-        
+
         if (button.html() === "Stopwatch") {
             button.html("Stop Stopwatch");
 
@@ -202,7 +202,7 @@
             clearInterval(interval);
         }
     });
-    
+
     // Count down
     function timerRun(seconds, counter, updateElementId) {
         if (seconds > counter) {
@@ -218,7 +218,7 @@
             remain = $(updateElementId).data("duration");
             $(updateElementId).val(remain);
         }
-        
+
         // Update the textbox with the remaining time
         $(updateElementId).val(remain);
     };
