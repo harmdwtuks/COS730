@@ -1,0 +1,221 @@
+﻿@model InteractionLayer.Models.Messaging.ChatViewModel
+
+@{
+    ViewBag.Title = "Chat - " + Model.TeamName;
+}
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<style type="text/css">
+    .newmessagediv {
+        width: 75%;
+    }
+
+    .container1 {
+        /*background: #ECE5DD;*/
+        /*font-family: "Helvetica Neue", Helvetica;*/
+        /*width: 75%;*/
+        margin: 0 auto;
+    }
+
+    .msg {
+        width: 75%;
+        height: auto;
+        display: block;
+        overflow: hidden;
+    }
+
+        .msg .bubble {
+            float: left;
+            max-width: 75%;
+            width: auto;
+            height: auto;
+            display: block;
+            background: #ebebeb;
+            border-radius: 5px;
+            position: relative;
+            margin: 10px 0 3px 25px;
+            box-shadow: 0px 2px 1px rgba(0, 0, 0, 0.2);
+        }
+
+            .msg .bubble.alt {
+                margin: 10px 25px 3px 0px;
+                background: #DCF8C6;
+                float: right;
+            }
+
+            .msg .bubble.follow {
+                margin: 2px 0 3px 25px;
+            }
+
+            .msg .bubble.altfollow {
+                margin: 2px 25px 3px 0px;
+                background: #DCF8C6;
+                float: right;
+            }
+
+            .msg .bubble .txt {
+                padding: 8px 0 8px 0;
+                width: 100%;
+            }
+
+                .msg .bubble .txt .name {
+                    font-weight: 600;
+                    font-size: 14px;
+                    display: inline-table;
+                    padding: 0 0 0 15px;
+                    margin: 0 0 4px 0;
+                    color: #3498db;
+                }
+
+                    .msg .bubble .txt .name span {
+                        font-weight: normal;
+                        color: #b3b3b3;
+                        overflow: hidden;
+                    }
+
+                    .msg .bubble .txt .name.alt {
+                        color: #2ecc51;
+                    }
+
+                .msg .bubble .txt .message {
+                    font-size: 14px;
+                    font-weight: 500;
+                    padding: 0 15px 0 15px;
+                    /*margin: auto;*/
+                    color: #2b2b2b;
+                    display: table;
+                }
+
+                .msg .bubble .txt .timestamp {
+                    font-size: 11px;
+                    margin: auto;
+                    padding: 0 15px 0 0;
+                    display: table;
+                    float: right;
+                    position: relative;
+                    text-transform: uppercase;
+                    color: #999;
+                }
+
+            .msg .bubble .bubble-arrow {
+                position: absolute;
+                float: left;
+                left: -11px;
+                top: 0px;
+            }
+
+                .msg .bubble .bubble-arrow.alt {
+                    bottom: 20px;
+                    left: auto;
+                    right: 4px;
+                    float: right;
+                }
+
+                .msg .bubble .bubble-arrow:after {
+                    content: "";
+                    position: absolute;
+                    border-top: 15px solid #ebebeb;
+                    border-left: 15px solid transparent;
+                    border-radius: 4px 0 0 0px;
+                    width: 0;
+                    height: 0;
+                }
+
+                .msg .bubble .bubble-arrow.alt:after {
+                    border-top: 15px solid #DCF8C6;
+                    transform: scaleX(-1);
+                }
+</style>
+
+<div class="row">
+    <div class="col-md-2">
+
+    </div>
+    <div class="col-md-8">
+        <h2>@Model.TeamName</h2>
+        <br />
+        <div class="row">
+            <div class="col-md-12">
+                <div class="container1">
+                    @foreach (var chatItem in Model.ChatMessages)
+                    {
+                        if (chatItem.SenderId == Model.CurUserId)
+                        {
+                            <div class="msg">
+                                <div class="bubble alt">
+                                    <div class="txt">
+                                        <span class="name alt">
+                                            @chatItem.SenderName
+                                        </span>
+                                        <span class="timestamp">@chatItem.Timestamp</span>
+                                        <p class="message" style="text-align:left !important"> @chatItem.Message</p>
+                                    </div>
+                                    <div class="bubble-arrow alt"></div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="msg">
+                                <div class="bubble">
+                                    <div class="txt">
+                                        <span class="name">@chatItem.SenderName</span>
+                                        <span class="timestamp">@chatItem.Timestamp</span>
+                                        <span class="message" style="text-align:left !important"></span>
+                                        <p class="message" style="text-align:left !important"> @chatItem.Message</p>
+                                    </div>
+                                    <div class="bubble-arrow"></div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row newmessagediv">
+            <div class="col-md-12">
+                <div class="container1">
+                    <form id="sendMessageForm">
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("TeamId", Model.TeamId)
+                        <div class="input-group">
+                            <textarea id="NewMessage" name="NewMessage" class="form-control" placeholder="Type Your Message..." style="min-width:100% !important"></textarea>
+                            <span class="input-group-addon">
+                                <button id="SendMessage" class="btn btn-default" type="button">Send</button>
+                            </span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+
+    </div>
+</div>
+
+<script>
+    $("#SendMessage").click(function (e) {
+        e.preventDefault();
+
+        $.ajax({
+            type: "POST",
+            url: "/Messaging/SendMessage",
+            datatype: "json",
+            data: $("form[id=sendMessageForm]").serialize(),
+            success: function (data) {
+                if (data.status == "OK") {
+                    location.reload();
+                }
+                else {
+                    alert(data.message);
+                }
+            },
+            error: function (err) {
+                alert(err.responseText);
+            }
+        });
+    });
+</script>

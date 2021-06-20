@@ -170,7 +170,9 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\MessagingController.cs" />
     <Compile Include="Controllers\MetricsController.cs" />
+    <Compile Include="Models\Messaging\ChatViewModel.cs" />
     <Compile Include="Models\ResetPassword.cs" />
     <Compile Include="Controllers\WorkoutController.cs" />
     <Compile Include="Global.asax.cs">
@@ -189,6 +191,7 @@
     <Compile Include="Models\User\Team.cs" />
     <Compile Include="Models\User\UserViewModel.cs" />
     <Compile Include="Models\Workout\Exercise.cs" />
+    <Compile Include="Models\Workout\ExerciseCategoryStat.cs" />
     <Compile Include="Models\Workout\WorkoutCategory.cs" />
     <Compile Include="Models\Workout\WorkoutExercise.cs" />
     <Compile Include="Models\Workout\WorkoutExerciseManager.cs" />
@@ -272,6 +275,8 @@
     <Content Include="Views\Account\CreateTeam.cshtml" />
     <Content Include="Views\Account\SetPassword.cshtml" />
     <Content Include="Views\Metrics\LineChart.cshtml" />
+    <Content Include="Views\Messaging\Index.cshtml" />
+    <Content Include="Views\Messaging\GetChat.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

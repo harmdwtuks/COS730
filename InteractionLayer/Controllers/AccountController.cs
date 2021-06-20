@@ -24,6 +24,7 @@ namespace InteractionLayer.Controllers
     {
         private static readonly string GetRolesEndpoint = ConfigurationManager.AppSettings["GetRolesEndpoint"];
         private static readonly string GetTeamsEndpoint = ConfigurationManager.AppSettings["GetTeamsEndpoint"];
+        private static readonly string CreateTeamEndpoint = ConfigurationManager.AppSettings["CreateTeamEndpoint"];
         private static readonly string GetUsersEndpoint = ConfigurationManager.AppSettings["GetUsersEndpoint"];
         private static readonly string SetPasswordEndpoint = ConfigurationManager.AppSettings["SetPasswordEndpoint"];
         private static readonly string ForgotPasswordEndpoint = ConfigurationManager.AppSettings["ForgotPasswordEndpoint"];
@@ -596,7 +597,7 @@ namespace InteractionLayer.Controllers
 
             return teamList;
         }
-
+        
         [HttpGet]
         public ActionResult AddUser()
         {
@@ -651,6 +652,34 @@ namespace InteractionLayer.Controllers
             }
 
             //return View(); // redirect to login page
+            return Json(new { message }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult CreateTeam()
+        {
+            List<Team> existingTeamsList = GetTeams();
+
+            return View(existingTeamsList);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public ActionResult CreateTeam(Team team)
+        {
+            team.CreatorId = Convert.ToInt32(HttpContext.GetOwinContext().Authentication.User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value);
+            team.Timestamp = DateTime.Now;
+            JObject jObj = QueryMicroService(CreateTeamEndpoint, "POST", JsonConvert.SerializeObject(team));
+
+            string message = "";
+            if (jObj["status"].ToString() == "OK")
+            {
+                return RedirectToAction("CreateTeam", "Accounts");
+            }
+            else
+            {
+                message = jObj["result"].ToString();
+            }
+
             return Json(new { message }, JsonRequestBehavior.AllowGet);
         }
 

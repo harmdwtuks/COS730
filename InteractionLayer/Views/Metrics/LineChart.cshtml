@@ -1,36 +1,28 @@
 ﻿@model List<InteractionLayer.Models.MetricRecord>
 
-<canvas id="Linecanvas"></canvas>
+<canvas id="@Model.First().MetricType"></canvas>
 
 <script>
-
-    var LineChartData =
-    {
-        labels: [@Html.Raw(string.Join(",", string.Join(",",Model.Select(x => x.Timestamp.ToString("dd/MM")).ToArray()).Split(',').Select(x => string.Format("'{0}'", x)).ToList()))],
-        datasets: [{
-            label: '@Model.First().MetricType',
-            backgroundColor: "rgba(75,192,192,0.4)",
-            borderWidth: 2,
-            data: [@string.Join(",", Model.Select(x => x.Measurement.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)))]
-        }]
-    };
-
-    window.onload = function () {
-        var ctx1 = document.getElementById("Linecanvas").getContext("2d");
-        window.myBar = new Chart(ctx1,
+    new Chart("@Model.First().MetricType", {
+        type: "line",
+        data: {
+            labels: [@Html.Raw(string.Join(",", string.Join(",",Model.Select(x => x.Timestamp.ToString("dd/MM")).ToArray()).Split(',').Select(x => string.Format("'{0}'", x)).ToList()))],
+            datasets: [{
+                label: '@Model.First().MetricType',
+                backgroundColor: "rgba(75,192,192,0.4)",
+                borderWidth: 2,
+                data: [@string.Join(",", Model.Select(x => x.Measurement.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)))]
+            }]
+        },
+        options: {
+            title:
             {
-                type: 'line',
-                data: LineChartData,
-                options:
-                    {
-                        title:
-                        {
-                            display: true,
-                            text: '@Model.First().MetricType Line Chart'
-                        },
-                        responsive: true,
-                        maintainAspectRatio: true
-                    }
-            });
-    }
+                display: true,
+                text: '@Model.First().MetricType Line Chart'
+            },
+            responsive: true,
+            maintainAspectRatio: true
+        }
+    });
 </script>
+

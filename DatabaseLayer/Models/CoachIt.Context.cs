@@ -40,5 +40,6 @@ namespace DatabaseLayer.Models
         public virtual DbSet<Team> Teams { get; set; }
         public virtual DbSet<TeamsUser> TeamsUsers { get; set; }
         public virtual DbSet<WorkoutExerciseLinkCompleted> WorkoutExerciseLinkCompleteds { get; set; }
+        public virtual DbSet<Message> Messages { get; set; }
     }
 }

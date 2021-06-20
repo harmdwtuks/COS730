@@ -359,7 +359,7 @@ namespace InteractionLayer.Controllers
         public ActionResult NewUnit(string newUnit)
         {
             string JsonQuery = "{" +
-                                "\"unitName\":\"" + newUnit + "\"," +
+                                "\"unitName\":\"" + newUnit + "\"" +
                                "}";
 
 

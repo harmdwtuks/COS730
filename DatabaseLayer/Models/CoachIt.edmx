@@ -5,6 +5,16 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="CoachItModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Messages">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Message" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Timestamp" Type="datetime" Nullable="false" />
+          <Property Name="SenderId" Type="int" Nullable="false" />
+          <Property Name="TeamId" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="MetricClass">
           <Key>
             <PropertyRef Name="Id" />
@@ -158,6 +168,30 @@
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="Duration" Type="time" Precision="7" Nullable="false" />
         </EntityType>
+        <Association Name="FK_Messages_Teams">
+          <End Role="Teams" Type="Self.Teams" Multiplicity="1" />
+          <End Role="Messages" Type="Self.Messages" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Teams">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Messages">
+              <PropertyRef Name="TeamId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Messages_webpages_Users">
+          <End Role="webpages_Users" Type="Self.webpages_Users" Multiplicity="1" />
+          <End Role="Messages" Type="Self.Messages" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="webpages_Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Messages">
+              <PropertyRef Name="SenderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_MetricRecords_MetricType">
           <End Role="MetricType" Type="Self.MetricType" Multiplicity="1" />
           <End Role="MetricRecords" Type="Self.MetricRecords" Multiplicity="*" />
@@ -327,6 +361,7 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="CoachItModelStoreContainer">
+          <EntitySet Name="Messages" EntityType="Self.Messages" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MetricClass" EntityType="Self.MetricClass" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MetricRecords" EntityType="Self.MetricRecords" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MetricType" EntityType="Self.MetricType" Schema="dbo" store:Type="Tables" />
@@ -343,6 +378,14 @@
           <EntitySet Name="WorkoutExercises" EntityType="Self.WorkoutExercises" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WorkoutExercisesLInk" EntityType="Self.WorkoutExercisesLInk" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WorkoutUsers" EntityType="Self.WorkoutUsers" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Messages_Teams" Association="Self.FK_Messages_Teams">
+            <End Role="Teams" EntitySet="Teams" />
+            <End Role="Messages" EntitySet="Messages" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Messages_webpages_Users" Association="Self.FK_Messages_webpages_Users">
+            <End Role="webpages_Users" EntitySet="webpages_Users" />
+            <End Role="Messages" EntitySet="Messages" />
+          </AssociationSet>
           <AssociationSet Name="FK_MetricRecords_MetricType" Association="Self.FK_MetricRecords_MetricType">
             <End Role="MetricType" EntitySet="MetricType" />
             <End Role="MetricRecords" EntitySet="MetricRecords" />
@@ -472,6 +515,15 @@
             <End Role="WorkoutExercisesLInk" EntitySet="WorkoutExercisesLInks" />
             <End Role="WorkoutExerciseLinkCompleted" EntitySet="WorkoutExerciseLinkCompleteds" />
           </AssociationSet>
+          <EntitySet Name="Messages" EntityType="CoachItModel.Message" />
+          <AssociationSet Name="FK_Messages_Teams" Association="CoachItModel.FK_Messages_Teams">
+            <End Role="Team" EntitySet="Teams" />
+            <End Role="Message" EntitySet="Messages" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Messages_webpages_Users" Association="CoachItModel.FK_Messages_webpages_Users">
+            <End Role="webpages_Users" EntitySet="webpages_Users" />
+            <End Role="Message" EntitySet="Messages" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="MetricClass">
           <Key>
@@ -562,6 +614,7 @@
           <NavigationProperty Name="WorkoutUsers" Relationship="CoachItModel.FK_WorkoutUsers_webpages_Users" FromRole="webpages_Users" ToRole="WorkoutUser" />
           <NavigationProperty Name="Teams" Relationship="CoachItModel.FK_Teams_webpages_Users" FromRole="webpages_Users" ToRole="Team" />
           <NavigationProperty Name="TeamsUsers" Relationship="CoachItModel.FK_TeamsUsers_webpages_Users" FromRole="webpages_Users" ToRole="TeamsUser" />
+          <NavigationProperty Name="Messages" Relationship="CoachItModel.FK_Messages_webpages_Users" FromRole="webpages_Users" ToRole="Message" />
         </EntityType>
         <Association Name="FK_MetricType_MetricClass">
           <End Type="CoachItModel.MetricClass" Role="MetricClass" Multiplicity="1" />
@@ -719,6 +772,7 @@
           <Property Name="CreatorId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="webpages_Users" Relationship="CoachItModel.FK_Teams_webpages_Users" FromRole="Team" ToRole="webpages_Users" />
           <NavigationProperty Name="TeamsUsers" Relationship="CoachItModel.FK_TeamsUsers_Teams" FromRole="Team" ToRole="TeamsUser" />
+          <NavigationProperty Name="Messages" Relationship="CoachItModel.FK_Messages_Teams" FromRole="Team" ToRole="Message" />
         </EntityType>
         <EntityType Name="TeamsUser">
           <Key>
@@ -789,6 +843,42 @@
             </Principal>
             <Dependent Role="WorkoutExerciseLinkCompleted">
               <PropertyRef Name="WorkoutExerciseLinkId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Message">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Message1" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="SenderId" Type="Int32" Nullable="false" />
+          <Property Name="TeamId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Team" Relationship="CoachItModel.FK_Messages_Teams" FromRole="Message" ToRole="Team" />
+          <NavigationProperty Name="webpages_Users" Relationship="CoachItModel.FK_Messages_webpages_Users" FromRole="Message" ToRole="webpages_Users" />
+        </EntityType>
+        <Association Name="FK_Messages_Teams">
+          <End Type="CoachItModel.Team" Role="Team" Multiplicity="1" />
+          <End Type="CoachItModel.Message" Role="Message" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Team">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Message">
+              <PropertyRef Name="TeamId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Messages_webpages_Users">
+          <End Type="CoachItModel.webpages_Users" Role="webpages_Users" Multiplicity="1" />
+          <End Type="CoachItModel.Message" Role="Message" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="webpages_Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Message">
+              <PropertyRef Name="SenderId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -961,6 +1051,17 @@
                 <ScalarProperty Name="Sets" ColumnName="Sets" />
                 <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
                 <ScalarProperty Name="WorkoutExerciseLinkId" ColumnName="WorkoutExerciseLinkId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Messages">
+            <EntityTypeMapping TypeName="CoachItModel.Message">
+              <MappingFragment StoreEntitySet="Messages">
+                <ScalarProperty Name="TeamId" ColumnName="TeamId" />
+                <ScalarProperty Name="SenderId" ColumnName="SenderId" />
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+                <ScalarProperty Name="Message1" ColumnName="Message" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

@@ -1,7 +1,40 @@
-﻿
+﻿@model List<InteractionLayer.Models.Workout.ExerciseCategoryStat>
+
 @{
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+</script>
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Workout Stats!</h2>
+        <br />
+        <canvas id="WorkoutStats"></canvas>
+    </div>
+</div>
+
+<script>
+    new Chart("WorkoutStats", {
+        type: "doughnut",
+        data: {
+            labels: [@Html.Raw(string.Join(",", string.Join(",",Model.Select(x => x.Category).ToArray()).Split(',').Select(x => string.Format("'{0}'", x)).ToList()))],
+            datasets: [{
+                backgroundColor: [@Html.Raw(string.Join(",", string.Join(",",Model.Select(x => x.GraphSectionColor).ToArray()).Split(',').Select(x => string.Format("'{0}'", x)).ToList()))],
+                borderWidth: 2,
+                data: [@string.Join(",", Model.Select(x => x.NumExercises.ToString()))]
+            }]
+        },
+        options: {
+            title:
+            {
+                display: true,
+                text: 'Exercise Category Stats'
+            },
+            responsive: true,
+            maintainAspectRatio: true
+        }
+    });
+</script>
 

@@ -22,6 +22,7 @@ namespace DatabaseLayer.Models
             this.WorkoutUsers = new HashSet<WorkoutUser>();
             this.Teams = new HashSet<Team>();
             this.TeamsUsers = new HashSet<TeamsUser>();
+            this.Messages = new HashSet<Message>();
         }
     
         public int UserId { get; set; }
@@ -42,5 +43,7 @@ namespace DatabaseLayer.Models
         public virtual ICollection<Team> Teams { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TeamsUser> TeamsUsers { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Message> Messages { get; set; }
     }
 }

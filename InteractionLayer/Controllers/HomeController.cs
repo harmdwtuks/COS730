@@ -17,6 +17,7 @@ namespace InteractionLayer.Controllers
         [HttpGet, AllowAnonymous]
         public ActionResult Index()
         {
+            //return Json(new { unit = test }, JsonRequestBehavior.AllowGet);
             return View();
         }
 

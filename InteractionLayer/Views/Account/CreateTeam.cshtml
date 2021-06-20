@@ -1,4 +1,4 @@
-﻿@model List<InteractionLayer.Models.Accounts.Team>
+﻿@model List<InteractionLayer.Models.User.Team>
 
 @{
     ViewBag.Title = "CreateTeam";
@@ -60,7 +60,7 @@
 
         $.ajax({
             type: "POST",
-            url: "/Accounts/CreateTeam",
+            url: "/Account/CreateTeam",
             datatype: "json",
             data: $("form[id=NewTeam]").serialize(),
             success: function (data) {

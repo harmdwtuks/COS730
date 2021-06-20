@@ -154,7 +154,7 @@ namespace MetricsMS.Controllers
         private Tuple<string, string, List<MetricType>> TypesForClassId(int id)
         {
             string JsonQuery = "{" +
-                                "\"id\":\"" + id + "\"," +
+                                "\"id\":\"" + id + "\"" +
                                "}";
 
             JObject jObj = CallAPI(GetMetricTypesByIdEndpoint, "POST", JsonQuery);

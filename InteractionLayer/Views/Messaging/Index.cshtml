@@ -1,0 +1,29 @@
+﻿@model List<InteractionLayer.Models.User.Team>
+
+@{
+    ViewBag.Title = "Team Chats";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Team Chats</h2>
+        <br />
+        @foreach (var item in Model)
+        {
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row space-16">&nbsp;</div>
+                    <div class="thumbnail" style="min-width:75% !important">
+                        <div class="caption text-center">
+                            <div class="position-relative">
+                                <a href="@Url.Action("GetChat", "Messaging" , new { teamId=item.Id})">
+                                    <h4>@item.TeamName</h4>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

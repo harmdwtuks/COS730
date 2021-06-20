@@ -24,6 +24,7 @@ namespace InteractionLayer.Controllers
         private static readonly string CreateWorkoutEndpoint = ConfigurationManager.AppSettings["CreateWorkoutEndpoint"];
         private static readonly string GetUserWorkoutsEndpoint = ConfigurationManager.AppSettings["GetUserWorkoutsEndpoint"];
         private static readonly string CompleteWorkoutEndpoint = ConfigurationManager.AppSettings["CompleteWorkoutEndpoint"];
+        private static readonly string ExerciseCategoryStatsEndpoint = ConfigurationManager.AppSettings["ExerciseCategoryStatsEndpoint"];
 
         /// <summary>
         /// Generic API call funtion.
@@ -124,7 +125,40 @@ namespace InteractionLayer.Controllers
         // GET: Workout
         public ActionResult Index()
         {
-            return View();
+            string JsonQuery = "";
+
+            if (Session["ClientId"] == null && !(User.IsInRole("System Administrator") || User.IsInRole("Coach")))
+            {
+                string loggedInUserId = HttpContext.GetOwinContext().Authentication.User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
+
+                JsonQuery = "{" +
+                                "\"UserId\":\"" + loggedInUserId + "\"" +
+                               "}";
+            }
+            else
+            {
+                JsonQuery = "{" +
+                                "\"UserId\":\"" + Session["ClientId"].ToString() + "\"" +
+                               "}";
+            }
+            
+            JObject jObj = QueryMicroService(ExerciseCategoryStatsEndpoint, "POST", JsonQuery);
+
+            List<ExerciseCategoryStat> model = new List<ExerciseCategoryStat>();
+
+            if (jObj["status"].ToString() == "OK")
+            {
+                model = JsonConvert.DeserializeObject<List<ExerciseCategoryStat>>(jObj["result"].ToString().Replace("\\\"", "\""));
+            }
+
+            // Assign colors to each category.
+            var random = new Random();
+            foreach (var item in model)
+            {
+                item.GraphSectionColor = String.Format("#{0:X6}", random.Next(0x1000000));
+            }
+
+            return View(model);
         }
 
         private List<WorkoutCategory> WorkoutCategories()

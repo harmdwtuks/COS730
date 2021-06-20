@@ -376,6 +376,40 @@ namespace DatabaseLayer.Controllers
             return Ok(jObjReturn);
         }
 
+        [HttpPost]
+        [Route("ExerciseCategoryStats")]
+        public IHttpActionResult ExerciseCategoryStats([FromBody] JObject jsonResult)
+        {
+            dynamic jObjReturn = new JObject();
+
+            try
+            {
+                int userId = Convert.ToInt32(jsonResult["UserId"].ToString());
+
+                CoachItEntities _db = new CoachItEntities();
+
+                var model = _db.Database.SqlQuery<CategoryExerciseNumStat>("select Category, Count(1) NumExercises from [dbo].[WorkoutExerciseLinkCompleted] welc " +
+                    "join[dbo].[WorkoutExercisesLInk] wel on welc.WorkoutExerciseLinkId = wel.Id " +
+                    "join[dbo].[WorkoutExercises] we on we.Id = wel.ExerciseId " +
+                    "join[dbo].[WorkoutExerciseCategories] wec on wec.Id = we.CategoryId " +
+                    "join[dbo].[WorkoutUsers] wu on wu.Id = wel.WorkoutUsersId " +
+                    $"where wu.UserId = {userId} " +
+                    "group by Category");
+                
+                jObjReturn.status = "OK";
+                jObjReturn.result = JsonConvert.SerializeObject(model);
+
+                _db.Dispose();
+            }
+            catch (Exception ex)
+            {
+                jObjReturn.status = "FAILED";
+                jObjReturn.result = ex.Message;
+            }
+
+            return Ok(jObjReturn);
+        }
+
         #endregion WorkoutCategory Actions
     }
 }

@@ -24,6 +24,7 @@ namespace WorkoutMS.Controllers
         private static readonly string CreateWorkoutExerciseEndpoint = ConfigurationManager.AppSettings["CreateWorkoutExerciseEndpoint"];
         private static readonly string CreateWorkoutEndpoint = ConfigurationManager.AppSettings["CreateWorkoutEndpoint"];
         private static readonly string CompleteWorkoutEndpoint = ConfigurationManager.AppSettings["CompleteWorkoutEndpoint"];
+        private static readonly string ExerciseCategoryStatsEndpoint = ConfigurationManager.AppSettings["ExerciseCategoryStatsEndpoint"];
 
         /// <summary>
         /// Generic API call funtion.
@@ -343,6 +344,36 @@ namespace WorkoutMS.Controllers
                 {
                     jObjReturn.status = "FAILED";
                     jObjReturn.result = $"Failed to create new workouts.\n{jObj["result"].ToString()}";
+                }
+            }
+            catch (Exception ex)
+            {
+                jObjReturn.status = "FAILED";
+                jObjReturn.result = ex.Message;
+            }
+
+            return Ok(jObjReturn);
+        }
+
+        [HttpPost]
+        [Route("ExerciseCategoryStats")]
+        public IHttpActionResult ExerciseCategoryStats([FromBody] JObject jsonResult)
+        {
+            dynamic jObjReturn = new JObject();
+
+            try
+            {
+                JObject jObj = CallAPI(ExerciseCategoryStatsEndpoint, "POST", jsonResult.ToString());
+
+                if (jObj["status"].ToString() == "OK")
+                {
+                    jObjReturn.status = "OK";
+                    jObjReturn.result = jObj["result"].ToString();
+                }
+                else
+                {
+                    jObjReturn.status = "FAILED";
+                    jObjReturn.result = $"Failed to get statistics.\n{jObj["result"].ToString()}";
                 }
             }
             catch (Exception ex)

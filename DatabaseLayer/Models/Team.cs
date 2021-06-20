@@ -18,6 +18,7 @@ namespace DatabaseLayer.Models
         public Team()
         {
             this.TeamsUsers = new HashSet<TeamsUser>();
+            this.Messages = new HashSet<Message>();
         }
     
         public int Id { get; set; }
@@ -28,5 +29,7 @@ namespace DatabaseLayer.Models
         public virtual webpages_Users webpages_Users { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TeamsUser> TeamsUsers { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Message> Messages { get; set; }
     }
 }

@@ -54,6 +54,7 @@ namespace UserAuthenticationMS.Controllers
                 foreach (TeamViewModel team in existingTeams)
                 {
                     team.TeamMembers = (from s in _db.TeamsUsers
+                                        where s.TeamId == team.Id
                                         select new UserViewModel
                                         {
                                             UserId = s.webpages_Users.UserId,
@@ -79,7 +80,62 @@ namespace UserAuthenticationMS.Controllers
 
             return Ok(jObjReturn);
         }
-        
+
+        [HttpPost]
+        [Route("UserTeam")]
+        public IHttpActionResult UserTeam([FromBody] JObject jsonResult)
+        {
+            dynamic jObjReturn = new JObject();
+
+            int userId = Convert.ToInt32(jsonResult["UserId"].ToString().Trim());
+
+            try
+            {
+                CoachItEntities _db = new CoachItEntities();
+
+                List<TeamViewModel> existingTeams =
+                        (from s in _db.Teams
+                         join t in _db.TeamsUsers on s.Id equals t.TeamId
+                         where t.UserId == userId
+                         select new TeamViewModel
+                         {
+                             Id = s.Id,
+                             TeamName = s.TeamName,
+                             Timestamp = s.Timestamp,
+                             CreatorId = s.CreatorId,
+                             Creator = s.webpages_Users.Username
+                         }).ToList();
+
+                foreach (TeamViewModel team in existingTeams)
+                {
+                    team.TeamMembers = (from s in _db.TeamsUsers
+                                        where s.TeamId == team.Id
+                                        select new UserViewModel
+                                        {
+                                            UserId = s.webpages_Users.UserId,
+                                            Username = s.webpages_Users.Username,
+                                            Nickname = s.webpages_Users.Username,
+                                            FullNames = s.webpages_Users.FirstName,
+                                            LastName = s.webpages_Users.Surname,
+                                            EmailAddress = s.webpages_Users.EmailAddress,
+                                            TelephoneNumber = s.webpages_Users.ContactNumber
+                                        }).ToList();
+                }
+
+                _db.Dispose();
+
+                jObjReturn.status = "OK";
+                jObjReturn.result = JsonConvert.SerializeObject(existingTeams);
+            }
+            catch (Exception exception)
+            {
+                jObjReturn.status = "FAILED";
+                jObjReturn.result = $"Could Teams.\n{exception.Message}";
+            }
+
+            return Ok(jObjReturn);
+        }
+
         [HttpPost]
         [Route("CreateTeam")]
         public IHttpActionResult CreateTeam([FromBody] JObject jsonResult)
