@@ -178,7 +178,7 @@ namespace MessagingMS.Controllers
                     jObjReturn.status = "OK";
                     jObjReturn.result = jObj["result"].ToString();
 
-                    NotifyReceipients(Convert.ToInt32(jsonResult["TeamId"].ToString()));
+                    //NotifyReceipients(Convert.ToInt32(jsonResult["TeamId"].ToString()));
                 }
                 else
                 {

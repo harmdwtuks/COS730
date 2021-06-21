@@ -11,7 +11,7 @@ using System.Web.Mvc;
 
 namespace InteractionLayer.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class HomeController : Controller
     {
         [HttpGet, AllowAnonymous]
@@ -28,7 +28,7 @@ namespace InteractionLayer.Controllers
             return View();
         }
 
-        [Authorize(Roles = "System Administrator")]
+        //[Authorize(Roles = "System Administrator")]
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";
@@ -133,13 +133,7 @@ namespace InteractionLayer.Controllers
                 return jObj;
             }
         }
-
-        //[HttpGet, AllowAnonymous]
-        //public ActionResult Index()
-        //{
-        //    return View(new Login());
-        //}
-
+        
         [AllowAnonymous, HttpPost, ValidateAntiForgeryToken]
         public ActionResult Index(Login login)
         {

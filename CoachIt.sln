@@ -17,6 +17,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InteractionLayerTests", "In
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessagingMS", "MessagingMS\MessagingMS.csproj", "{E688D9CD-B312-4850-81FB-2ED1CAAA834B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseLayerTests", "DatabaseLayerTests\DatabaseLayerTests.csproj", "{E04DE103-5D1C-4164-AEB5-A693AE29C8E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessagingMSTests", "MessagingMSTests\MessagingMSTests.csproj", "{6666AA9A-3ECC-474F-BD58-4AF9F7DBB3F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +55,14 @@ Global
 		{E688D9CD-B312-4850-81FB-2ED1CAAA834B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E688D9CD-B312-4850-81FB-2ED1CAAA834B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E688D9CD-B312-4850-81FB-2ED1CAAA834B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E04DE103-5D1C-4164-AEB5-A693AE29C8E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E04DE103-5D1C-4164-AEB5-A693AE29C8E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E04DE103-5D1C-4164-AEB5-A693AE29C8E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E04DE103-5D1C-4164-AEB5-A693AE29C8E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6666AA9A-3ECC-474F-BD58-4AF9F7DBB3F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6666AA9A-3ECC-474F-BD58-4AF9F7DBB3F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6666AA9A-3ECC-474F-BD58-4AF9F7DBB3F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6666AA9A-3ECC-474F-BD58-4AF9F7DBB3F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

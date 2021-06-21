@@ -8,7 +8,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>LandingPage</title>
+    <title>Home</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
     <link rel="stylesheet" runat="server" media="screen" href="~/Content/Site.css" />
@@ -16,12 +16,15 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
 </head>
 <body>
+
     <div class="container body-content">
 
         @if (User.IsInRole("System Administrator") || User.IsInRole("Coach"))
         {
             <div class="row">
                 <div class="col-md-12">
+                    <h2>Dashboard</h2>
+                    <br />
                     @if (ViewBag.ClientName == null)
                     {
                         <span id="CurrentUser" class="label label-default">No Client Selected</span>
@@ -181,7 +184,13 @@
             </div>
         }
         else
-        {
+        {<div class="row">
+                <div class="col-md-12">
+                    <h2>Dashboard</h2>
+                </div>
+            </div>
+            <br />
+
             <div class="row">
                 <div class="col-md-3">
                     <div class="card cardmenu thumbnail">
@@ -252,7 +261,7 @@
                             <p class="card-text">Get in touch with your team and see what they're up to.</p>
                         </div>
                         <div class="card-footer">
-                            <a href="@(Url.Action("", ""))" class="btn btn-secondary">Messages</a>
+                            <a href="@(Url.Action("Index", "Messaging"))" class="btn btn-secondary">Messages</a>
                         </div>
                     </div>
                 </div>
@@ -268,7 +277,7 @@
     <script>
         $("#SelectUser").click(function (e) {
             e.preventDefault();
-            
+
             $.ajax({
                 type: "GET",
                 url: "/Account/GetUsersForModal",
