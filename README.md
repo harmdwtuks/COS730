@@ -11,13 +11,18 @@ The art of digital forensics was one of the most fascinating fields until I disc
 
 My main interest is software development (mainly the back-end), neural networks, videography and photography in my spare time.
 
-My main skill set includes (but not limited to)
-  Software development 
-    ASP.NET (Full Stack)
-    C++
-    SQL (MSSQL)
-    Neural networks
-  Software project management
+My main skill set includes (but not limited to):
+  <ul>
+  <li>Software development 
+    <ul>
+      <li>ASP.NET (Full Stack)</li>
+      <li>C++</li>
+      <li>SQL (MSSQL)</li>
+      <li>Neural networks</li>
+      </ul>
+    </li>
+  <li>Software project management</li>
+  </ul>
 
 Please find my LinkedIn profile here: https://www.linkedin.com/in/harm-de-wet-031ba0a6
 
@@ -27,13 +32,14 @@ https://drive.google.com/file/d/1c9N2OUJtBMIZPcofn-PmDefJpH9k8BYe/view?usp=shari
 
 <h3>Links to Project Management Documents Used For the Development of <i>CoachIt</i></h3>
 
+https://drive.google.com/file/d/13u_QAVsh2v-Gkp_ItXFeODpcpq5PJhwj/view?usp=sharing
 
-A link to your user manual - a pdf document
-{ A link to your Project management that outlines what you have done, doing and planned to do with
-the timelines.
+https://github.com/harmdwtuks/COS730/projects/1
 
+<h3>Links to Project Management Documents Used For the Development of <i>CoachIt</i></h3>
 
-
+Setup SQL Server on the machine with a database user dedicated to only the CoachIt database that you need to create ussing the following script in this repository:
+Database.sql
 
 
 
