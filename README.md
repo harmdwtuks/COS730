@@ -3,7 +3,7 @@ COS730 Assignment
 
 <h3>Introcucing myself</h3>
 
-Hi, I am Harm de Wet (u20798441) a part-time Hons. Computer Science student at the University of Pretoria. I am furthuring my studies to acieve my goal of being a data scientist and software engineer knowing multiple sides of the industry with the hopes to own my own Software Developmemt House.
+Hi, I am Harm de Wet (u20798441) a part-time Hons. Computer Science student at the University of Pretoria. I am furthuring my studies to acieve my goal of being a data scientist and software engineer knowing multiple sides of the industry with the hopes to own my own Software Development House.
 
 I currently work as a senior developer for a digital forensics and analytics company working on the core products of the company. I am given a lot of free roam at the compay to advance the systems in any sensible manner I deem fit.
 
@@ -44,7 +44,7 @@ Copy the files to an IIS hosting environment with each project's release in its 
 
 Confugure only the Interaction layer with IIS to be externally accessible (this is the only one that users will connect to directly.)
 
-The other projects can run on anh port that you set in the IIS settings.
+The other projects can run each on a port that you set in the IIS settings.
 
 Update the Web.Config of each project in IIS with the new URLs of each of the other components of the system.
 
@@ -56,9 +56,9 @@ COS730\DatabaseLayer\Database.sql updated with you environment details and updat
 
 Update the Web.config file of the database layer with the new database connection string (with the detials of the instance that you just created)
 
-To gain access as the first user, open the application (interaction layer/front end) using a web-browser and performing a forgot password action to receive a link to reset your password. (The emails cridentials to sent the email will have to be specified in the UserManagerMS Web.Config file - defaults for the account has not been created yet.)
+To gain access as the first user, open the application (interaction layer/front end) using a web-browser and performing a forgot password action to receive a link to reset your password. (The email's cridentials used to send the email will have to be specified in the UserManagerMS Web.Config file - defaults for the account has not been created yet.)
 
-Now log in and enjoy ising the system!
+Now log in and enjoy using the system!
 
 <h3>Steps to Develop <i>CoachIt</i></h3>
 
@@ -70,11 +70,11 @@ Update the Web.Config of each project with the new URLs of each of the other com
 
 Setup SQL Server on the machine with a database user dedicated to only the CoachIt database that you need to create using the following script in this repository:
 
-COS730\DatabaseLayer\Database.sql updated with you environment details and updating the default user to be you.
+COS730\DatabaseLayer\Database.sql updated with your environment details and updating the default user to be you.
 
-Update the Web.config file of the database layer with the new database connection string (with the detials of the instance that you just created)
+Update the Web.config file of the database layer with the new database connection string (with the details of the instance that you just created)
 
-To gain access as the first user, open the application (interaction layer/front end) using a web-browser and performing a forgot password action to receive a link to reset your password. (The emails cridentials to sent the email will have to be specified in the UserManagerMS Web.Config file - defaults for the account has not been created yet.)
+To gain access as the first user, open the application (interaction layer/front end) using a web-browser and performing a forgot password action to receive a link to reset your password. (The email's cridentials used to send the email will have to be specified in the UserManagerMS Web.Config file - defaults for the account has not been created yet.)
 
-Now you re ready to log in for testing and setup to develop!
+Now you're ready to log in for testing and setup to develop!
 
